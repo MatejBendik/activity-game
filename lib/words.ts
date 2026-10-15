@@ -92,13 +92,11 @@ export const normalize = (text: string) =>
     .replace(/[^a-z0-9]/g, "");
 export const words: Word[] = activities.flatMap((activity) =>
   ([3, 4, 5] as Points[]).flatMap((points) =>
-    pools[activity][points]
-      .split(/[|\n]/)
-      .map((text, i) => ({
-        id: `${activity}-${points}-${i + 1}`,
-        text: text.trim(),
-        activity,
-        points,
-      })),
+    pools[activity][points].split(/[|\n]/).map((text, i) => ({
+      id: `${activity}-${points}-${i + 1}`,
+      text: text.trim(),
+      activity,
+      points,
+    })),
   ),
 );
