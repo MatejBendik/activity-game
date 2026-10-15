@@ -46,7 +46,7 @@ potopená loď plná pokladov|dve tváre jedného človeka|cesta okolo sveta bal
   pantomima: {
     3: `čistenie zubov|varenie polievky|jazda na bicykli|plávanie|lyžovanie|korčuľovanie|beh|skákanie cez švihadlo|zdvíhanie činiek|hranie futbalu
 hranie tenisu|hranie golfu|bowling|rybárčenie|venčenie psa|umývanie okien|vysávanie|žehlenie|pranie bielizne|umývanie riadu
-čítanie knihy|písanie na počítači|telefonovanie|fotografovanie|šoférovanie|lietaním napodobni vtáka|spánok|zobúdzanie|kýchanie|štikútanie
+čítanie knihy|písanie na počítači|telefonovanie|fotografovanie|šoférovanie|lietajúci vták|spánok|zobúdzanie|kýchanie|štikútanie
 opitý človek|bozkávanie|flirtovanie|nanášanie rúžu|obliekanie nohavíc|chôdza na podpätkoch|holenie|česanie|sprchovanie|opaľovanie
 gitarista|bubeník|dirigent|čašník|boxer|kovboj|zombie|gorila|kura|žaba`,
     4: `chôdza proti vetru|čakanie na meškajúci autobus|otváranie zaseknutej fľaše|stavanie stanu|výmena pneumatiky|vŕtanie do steny|chytanie komára|sťahovanie chladničky|skladanie nábytku|pečenie palaciniek
