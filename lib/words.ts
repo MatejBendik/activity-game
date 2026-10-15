@@ -1,11 +1,34 @@
-export const activities = ['opis', 'kreslenie', 'pantomima'] as const;
-export type Activity = typeof activities[number];
+export const activities = ["opis", "kreslenie", "pantomima"] as const;
+export type Activity = (typeof activities)[number];
 export type Points = 3 | 4 | 5;
-export type Word = { id: string; text: string; activity: Activity; points: Points };
+export type Word = {
+  id: string;
+  text: string;
+  activity: Activity;
+  points: Points;
+};
 export const activityInfo = {
-  opis: { name: 'Slovný opis', short: 'Opis', instruction: 'Opíš slovo. Nepouži jeho koreň ani preklad.', hint: 'Povedz to po svojom.', color: '#8758c8' },
-  kreslenie: { name: 'Kreslenie', short: 'Kreslenie', instruction: 'Kresli na papier. Bez textu a bez rozprávania.', hint: 'Jeden obrázok povie viac.', color: '#db793b' },
-  pantomima: { name: 'Pantomíma', short: 'Pantomíma', instruction: 'Predveď zadanie telom. Bez slov a zvukov.', hint: 'Nechaj hovoriť svoje telo.', color: '#2d8a70' },
+  opis: {
+    name: "Slovný opis",
+    short: "Opis",
+    instruction: "Opíš slovo. Nepouži jeho koreň ani preklad.",
+    hint: "Povedz to po svojom.",
+    color: "#8758c8",
+  },
+  kreslenie: {
+    name: "Kreslenie",
+    short: "Kreslenie",
+    instruction: "Kresli na papier. Bez textu a bez rozprávania.",
+    hint: "Jeden obrázok povie viac.",
+    color: "#db793b",
+  },
+  pantomima: {
+    name: "Pantomíma",
+    short: "Pantomíma",
+    instruction: "Predveď zadanie telom. Bez slov a zvukov.",
+    hint: "Nechaj hovoriť svoje telo.",
+    color: "#2d8a70",
+  },
 };
 // Original Slovak prompts, curated independently for each activity and difficulty.
 const pools: Record<Activity, Record<Points, string>> = {
@@ -61,5 +84,21 @@ nosiť vodu v deravom vedre|chytať vlastný tieň|potichu kráčať cez vŕzgaj
 rodič prebaľuje veľmi živé dieťa|človek uviaznutý v točivých dverách|tajný agent prezlečený za upratovačku|modelka na rozbitom móle|žonglovanie s horúcimi zemiakmi|strážiť spiaceho draka|uhýbať neviditeľným laserovým lúčom|naháňať parochňu vo vetre|hrať šach sám so sebou|niesť obrovskú neviditeľnú skriňu`,
   },
 };
-export const normalize = (text: string) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('sk').replace(/[^a-z0-9]/g, '');
-export const words: Word[] = activities.flatMap(activity => ([3, 4, 5] as Points[]).flatMap(points => pools[activity][points].split(/[|\n]/).map((text, i) => ({ id: `${activity}-${points}-${i + 1}`, text: text.trim(), activity, points }))));
+export const normalize = (text: string) =>
+  text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("sk")
+    .replace(/[^a-z0-9]/g, "");
+export const words: Word[] = activities.flatMap((activity) =>
+  ([3, 4, 5] as Points[]).flatMap((points) =>
+    pools[activity][points]
+      .split(/[|\n]/)
+      .map((text, i) => ({
+        id: `${activity}-${points}-${i + 1}`,
+        text: text.trim(),
+        activity,
+        points,
+      })),
+  ),
+);

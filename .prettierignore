@@ -1,0 +1,6 @@
+.next/
+out/
+node_modules/
+bun.lock
+next-env.d.ts
+AGENTS.md
