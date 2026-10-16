@@ -1,5 +1,5 @@
 import { describe, expect, mock, test } from "bun:test";
-import { playCue } from "../lib/sound";
+import { countdownSecond, playCue } from "../lib/sound";
 
 function audioContext() {
   const oscillators: {
@@ -91,6 +91,41 @@ describe("game sound cues", () => {
       Promise.reject(new Error("Audio unavailable")),
     );
     await expect(playCue(context, true, "everyone")).resolves.toBeUndefined();
+    expect(oscillators).toHaveLength(0);
+  });
+});
+
+describe("final five seconds", () => {
+  test("one tick for each displayed second, no duplicates or late ticks", () => {
+    const deadline = 10000;
+    let previous = 6;
+    const ticks: number[] = [];
+    for (let now = 0; now <= 11000; now += 100) {
+      const second = countdownSecond(deadline, now, previous);
+      if (second !== null) {
+        ticks.push(second);
+        previous = second;
+      }
+    }
+    expect(ticks).toEqual([5, 4, 3, 2, 1]);
+    expect(countdownSecond(deadline, 4999, 6)).toBeNull();
+    expect(countdownSecond(deadline, 10000, 6)).toBeNull();
+  });
+  test("a delayed timer emits only the current second", () => {
+    expect(countdownSecond(10000, 8300, 6)).toBe(2);
+    expect(countdownSecond(10000, 8500, 2)).toBeNull();
+    expect(countdownSecond(10000, 6000, 2)).toBeNull();
+  });
+  test("countdown is a short rising tick, distinct from time-up", async () => {
+    const { context, oscillators } = audioContext();
+    await playCue(context, true, "countdown", 5);
+    await playCue(context, true, "countdown", 1);
+    expect(oscillators.map((n) => n.frequency.value)).toEqual([880, 1320]);
+    expect(oscillators[0].stop).toHaveBeenCalledWith(10.1);
+  });
+  test("muting also suppresses countdown ticks", async () => {
+    const { context, oscillators } = audioContext();
+    await playCue(context, false, "countdown", 1);
     expect(oscillators).toHaveLength(0);
   });
 });

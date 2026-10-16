@@ -1,10 +1,11 @@
-export type SoundCue = "timeUp" | "everyone";
+export type SoundCue = "timeUp" | "everyone" | "countdown";
 
 // Small synthesized cues: no downloads, permissions or third-party audio assets.
 export function playCue(
   context: AudioContext | null,
   enabled: boolean,
   cue: SoundCue,
+  seconds = 5,
 ): Promise<void> {
   if (!context || !enabled || context.state === "closed")
     return Promise.resolve();
@@ -14,8 +15,13 @@ export function playCue(
       .resume()
       .then(() => {
         const notes =
-          cue === "everyone" ? [880, 1108.73, 1318.51] : [740, 740, 520];
-        const length = cue === "everyone" ? 0.55 : 0.18;
+          cue === "everyone"
+            ? [880, 1108.73, 1318.51]
+            : cue === "countdown"
+              ? [880 + (5 - Math.max(1, Math.min(5, seconds))) * 110]
+              : [740, 740, 520];
+        const length =
+          cue === "everyone" ? 0.55 : cue === "countdown" ? 0.1 : 0.18;
         const step = cue === "everyone" ? 0.14 : 0.2;
         notes.forEach((frequency, index) => {
           const start = context.currentTime + index * step;
@@ -49,4 +55,16 @@ export function playCue(
       // Audio failure must never prevent a turn from starting or ending.
       .catch(() => {})
   );
+}
+
+// Match the displayed 5, 4, 3, 2, 1; never repeat or catch up missed ticks in a burst.
+export function countdownSecond(
+  deadline: number,
+  now: number,
+  previous: number,
+): number | null {
+  const remaining = deadline - now;
+  if (remaining <= 0 || remaining > 5000) return null;
+  const second = Math.ceil(remaining / 1000);
+  return second < previous ? second : null;
 }

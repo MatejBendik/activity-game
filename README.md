@@ -40,7 +40,7 @@ Oficiálne podklady: [Next.js setup](https://nextjs.org/docs/app/getting-started
 - Bodová hodnota sa vyberá pred súkromným odhalením. Náročnosť sa potom nemení.
 - Čas sa spúšťa výslovne a zadanie sa pri spustení automaticky skryje. Tlačidlom „Zobraziť zadanie“ sa dá pripomenúť. Zelená fajka vpravo je úspech, červené X vľavo neúspech.
 - Úspech musí byť potvrdený **pred** absolútnym časom konca; klik presne na hranici je už neskoro. Po uplynutí času je výsledok automaticky nula, bez možnosti dodatočného pripísania bodov.
-- Pri otvorenom ťahu včasná fajka zaznamená úspech a zastaví odpočítavanie. Výber úspešného tímu môže nasledovať neskôr: správny tím dostane hodnotu zadania a pri úspechu súpera dostane predvádzajúci tím 2 body. Pri spustení času otvoreného ťahu zaznie krátke zacinkanie. Prepínač „Zvuky hry“ ovláda túto zvučku aj koniec času. Obnovenie stránky zvučku neopakuje. Dva otvorené ťahy nejdú za sebou; každý ostatný vhodný ťah má 20 % šancu.
+- Pri otvorenom ťahu včasná fajka zaznamená úspech a zastaví odpočítavanie. Výber úspešného tímu môže nasledovať neskôr: správny tím dostane hodnotu zadania a pri úspechu súpera dostane predvádzajúci tím 2 body. Krátke zacinkanie zaznie už pri zobrazení banneru na začiatku otvoreného ťahu. Pri spustení času sa neopakuje. Prepínač „Zvuky hry“ ovláda túto zvučku, tiknutia počas posledných piatich sekúnd aj koniec času. Obnovenie stránky zvučku neopakuje. Dva otvorené ťahy nejdú za sebou; každý ostatný vhodný ťah má 20 % šancu.
 - Omylom potvrdený úspech možno na obrazovke výsledku odvolať; odstránia sa aj bonusové body. Neúspech nemožno spätne zmeniť na úspech.
 - Víťazstvo sa overí po všetkých bodoch z ťahu. Vyššie skóre vyhrá; pri zhode najvyšších skóre nad cieľom je víťazstvo spoločné.
 

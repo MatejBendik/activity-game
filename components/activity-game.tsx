@@ -25,7 +25,7 @@ import {
   VolumeX,
   X,
 } from "lucide-react";
-import { playCue } from "@/lib/sound";
+import { countdownSecond, playCue } from "@/lib/sound";
 import { Illustration } from "./illustration";
 import { Modal, Rules, TeamScores } from "./game-ui";
 import {
@@ -89,10 +89,30 @@ export default function ActivityGame() {
       );
     }
   };
+  const prepareAudio = () => {
+    try {
+      if (
+        (!audio.current || audio.current.state === "closed") &&
+        typeof AudioContext !== "undefined"
+      )
+        audio.current = new AudioContext();
+      void audio.current?.resume().catch(() => {});
+    } catch {
+      // Audio availability never blocks a game action.
+    }
+    return audio.current;
+  };
   const apply = (next: Game) => {
+    // New-round actions run in a user gesture, so mobile browsers can unlock audio.
+    const announceEveryone =
+      next.phase === "choose" &&
+      next.turn.open &&
+      next.turn !== gameRef.current?.turn;
     persist(next);
     gameRef.current = next;
     setGame(next);
+    if (announceEveryone && next.settings.sound)
+      void playCue(prepareAudio(), true, "everyone");
   };
   const dispatch = (action: Action) => {
     const current = gameRef.current;
@@ -183,6 +203,7 @@ export default function ActivityGame() {
   }, [draft, ready]);
   useEffect(() => {
     if (game?.phase !== "playing") return;
+    let lastCountdownSecond = 6;
     const tick = () => {
       const timestamp = Date.now();
       setNow(timestamp);
@@ -196,6 +217,22 @@ export default function ActivityGame() {
         persist(next);
         gameRef.current = next;
         setGame(next);
+      } else if (current?.phase === "playing" && current.turn.deadline) {
+        const second = countdownSecond(
+          current.turn.deadline,
+          timestamp,
+          lastCountdownSecond,
+        );
+        if (second !== null) {
+          lastCountdownSecond = second;
+          if (document.visibilityState === "visible")
+            void playCue(
+              audio.current,
+              current.settings.sound,
+              "countdown",
+              second,
+            );
+        }
       }
     };
     const id = window.setInterval(tick, 100);
@@ -243,20 +280,7 @@ export default function ActivityGame() {
   const startTimer = (time: number) => {
     const current = gameRef.current;
     if (current?.phase !== "reveal") return;
-    try {
-      if (
-        (!audio.current || audio.current.state === "closed") &&
-        typeof AudioContext !== "undefined"
-      )
-        audio.current = new AudioContext();
-      if (current.turn.open) {
-        void playCue(audio.current, current.settings.sound, "everyone");
-      } else if (current.settings.sound) {
-        void audio.current?.resume().catch(() => {});
-      }
-    } catch {
-      // Unsupported or unavailable audio must not block gameplay.
-    }
+    if (current.settings.sound) prepareAudio();
     setNow(time);
     dispatch({ type: "start", now: time });
   };
