@@ -1512,3 +1512,12 @@ button svg {
 .handoff-context .open-banner {
   margin: 0;
 }
+
+.handoff-team {
+  max-width: 100%;
+  font-size: clamp(30px, 6vw, 38px);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.8px;
+  overflow-wrap: anywhere;
+}

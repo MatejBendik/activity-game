@@ -758,7 +758,12 @@ export default function ActivityGame() {
                 {phase === "handoff" && (
                   <>
                     <div className="handoff-context">
-                      <span className="eyebrow">{team.name}</span>
+                      <span
+                        className="handoff-team"
+                        style={{ color: team.color }}
+                      >
+                        {team.name}
+                      </span>
                       {game.turn.open && (
                         <div className="open-banner">
                           <Users size={17} />
