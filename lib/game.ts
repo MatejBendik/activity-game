@@ -261,6 +261,20 @@ export function availablePoints(game: Game) {
 export function serialize(game: Game) {
   return JSON.stringify(game);
 }
+// A saved turn owns its prompt snapshot: editing the live pool must not erase a game.
+function isWordSnapshot(value: unknown): value is Word {
+  if (!value || typeof value !== "object") return false;
+  const word = value as Partial<Word>;
+  return (
+    typeof word.id === "string" &&
+    typeof word.text === "string" &&
+    word.text.trim().length > 0 &&
+    word.text.length <= 200 &&
+    activities.includes(word.activity as Activity) &&
+    [3, 4, 5].includes(word.points ?? 0) &&
+    new RegExp(`^${word.activity}-${word.points}-[1-9]\\d*$`).test(word.id)
+  );
+}
 export function deserialize(raw: string | null): Game | null {
   if (!raw) return null;
   try {
@@ -317,16 +331,11 @@ export function deserialize(raw: string | null): Game | null {
       !Array.isArray(g.history)
     )
       return null;
-    if (g.phase !== "choose") {
-      const word = words.find((w) => w.id === g.turn.word?.id);
-      if (
-        !word ||
-        word.text !== g.turn.word?.text ||
-        word.points !== g.turn.word?.points ||
-        word.activity !== g.turn.activity
-      )
-        return null;
-    }
+    if (
+      g.phase !== "choose" &&
+      (!isWordSnapshot(g.turn.word) || g.turn.word.activity !== g.turn.activity)
+    )
+      return null;
     if (
       ["playing", "selectWinner"].includes(g.phase) &&
       (!Number.isFinite(g.turn.deadline) || (g.turn.deadline ?? 0) <= 0)
@@ -346,7 +355,7 @@ export function deserialize(raw: string | null): Game | null {
           r &&
           g.teams.some((t) => t.id === r.teamId) &&
           (r.winnerId === null || g.teams.some((t) => t.id === r.winnerId)) &&
-          words.some((w) => w.id === r.word?.id) &&
+          isWordSnapshot(r.word) &&
           typeof r.open === "boolean" &&
           typeof r.expired === "boolean" &&
           r.awards &&

@@ -53,6 +53,25 @@ describe("original prompt database", () => {
       ).toBe(true);
   });
 });
+describe("simpler drawing and mime prompts", () => {
+  for (const activity of ["kreslenie", "pantomima"] as const) {
+    test(`${activity}: four points uses at most two words, mostly single words`, () => {
+      const pool = words.filter(
+        (w) => w.activity === activity && w.points === 4,
+      );
+      expect(pool.every((w) => w.text.split(/\s+/).length <= 2)).toBe(true);
+      expect(
+        pool.filter((w) => w.text.split(/\s+/).length === 1).length,
+      ).toBeGreaterThan(25);
+    });
+    test(`${activity}: five points uses at most four words`, () => {
+      const pool = words.filter(
+        (w) => w.activity === activity && w.points === 5,
+      );
+      expect(pool.every((w) => w.text.split(/\s+/).length <= 4)).toBe(true);
+    });
+  }
+});
 describe("turn state and fairness", () => {
   test("balanced triplets and no consecutive activity at boundaries", () => {
     let bag: Game["bag"] = [];
@@ -235,5 +254,46 @@ describe("persistence", () => {
       JSON.stringify({ ...newGame(), phase: "playing" }),
     ])
       expect(deserialize(raw)).toBeNull();
+  });
+});
+
+describe("saved prompt compatibility", () => {
+  test("a prompt changed or removed from the pool preserves an active saved turn", () => {
+    const g = playing();
+    g.turn.word = {
+      id: "pantomima-5-50",
+      activity: "pantomima",
+      points: 5,
+      text: "niesť obrovskú neviditeľnú skriňu",
+    };
+    g.turn.activity = "pantomima";
+    expect(deserialize(serialize(g))).toEqual(g);
+    expect(deserialize(serialize(g))?.turn.deadline).toBe(61000);
+  });
+  test("history with retired prompts preserves scores and team order", () => {
+    const g = correct(playing());
+    g.history[0].word = {
+      id: "kreslenie-4-50",
+      activity: "kreslenie",
+      points: 4,
+      text: "trezor v banke",
+    };
+    expect(deserialize(serialize(g))).toEqual(g);
+    const next = transition(g, { type: "next" });
+    expect(deserialize(serialize(next))).toEqual(next);
+  });
+  test("invalid saved prompt shapes remain rejected", () => {
+    for (const invalid of [
+      { text: "" },
+      { id: "invalid" },
+      { points: 99 },
+      { activity: "invalid" },
+    ]) {
+      const g = playing();
+      g.turn.word = { ...g.turn.word!, ...invalid } as NonNullable<
+        Game["turn"]["word"]
+      >;
+      expect(deserialize(serialize(g))).toBeNull();
+    }
   });
 });

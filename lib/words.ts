@@ -36,7 +36,7 @@ const pools: Record<Activity, Record<Points, string>> = {
     3: `zubná kefka|chladnička|slnečník|letenka|zmrzlina|vankúš|kľúčenka|výťah|kaderník|vodopád
 pizza|hasič|knižnica|diamant|poštár|narodeniny|kufor|dovolenka|snehuliak|mikrovlnka
 piráti|šampanské|káva|upír|medové týždne|sused|semafor|polícia|grilovačka|tajomstvo
-Harry Potter|Shrek|Titanic|James Bond|Spider-Man|Popoluška|Darth Vader|Mr. Bean|Mikuláš|Santa Claus
+Harry Potter|Shrek|Titanic|Spider-Man|Popoluška|Mr. Bean|Mikuláš|budík|župan|fotka
 rozlúčka so slobodou|prvé rande|podprsenka|kondóm|striptíz|svokra|pyžamo|červené víno|karaoke|kocovina`,
     4: `výpadok elektriny|stratená batožina|svedomie|žiarlivosť|slepé rande|milostný trojuholník|tichá domácnosť|manželská poradňa|platonická láska|výhovorka
 alibi|hypotéka|inflácia|výpovedná lehota|predmanželská zmluva|odpočúvanie|dvojitý agent|čierny pasažier|cestovná horúčka|záchranná brzda
@@ -46,7 +46,7 @@ láska na diaľku|úniková miestnosť|spolujazda|rodinné dedičstvo|virtuálna
     5: `hľadať ihlu v kope sena|robiť z komára somára|nosiť drevo do lesa|mať maslo na hlave|kúpiť mačku vo vreci|hádzať perly sviniam|mať obe ruky ľavé|liať olej do ohňa|chodiť okolo horúcej kaše|zabiť dve muchy jednou ranou
 ranné výčitky po firemnom večierku|omylom odoslaná milostná správa|svokra na neohlásenej návšteve|bývalý partner na vlastnej svadbe|rande naslepo s vlastným šéfom|pokazený výťah plný susedov|rodinná hádka pri vianočnom stole|stratený pas pred odletom|tajný vzťah na pracovisku|svadobná noc bez elektriny
 pasívne agresívna poznámka|strach z verejného vystupovania|neopätovaná láska z detstva|paradox cestovania v čase|efekt snehovej gule|kolektívna strata krátkodobej pamäti|ilúzia slobodnej vôle|dohoda o mlčanlivosti|syndróm podvodníka|morálna dilema
-keď neprší aspoň kvapká|ticho pred búrkou|posledná kvapka trpezlivosti|víťazstvo s horkou príchuťou|príliš veľa kuchárov|pravda vyšla na povrch|v správnom čase na nesprávnom mieste|kostlivec v rodinnej skrini|dôvera na tenkom ľade|sľuby sa sľubujú
+keď neprší aspoň kvapká|ticho pred búrkou|posledná kvapka trpezlivosti|víťazstvo s horkou príchuťou|príliš veľa kuchárov|pravda vyšla na povrch|v správnom čase na správnom mieste|kostlivec v rodinnej skrini|dôvera na tenkom ľade|sľuby sa sľubujú
 návrat do budúcnosti|vlk z Wall Street|Pán prsteňov|večný život bez spomienok|čas sú peniaze|láska prechádza cez žalúdok|účel svätí prostriedky|zakázaná láska dvoch nepriateľov|pomsta chutí najlepšie studená|cesta do pekla dobrými úmyslami`,
   },
   kreslenie: {
@@ -55,16 +55,16 @@ vlak|raketa|srdce|koruna|kľúč|hodiny|okuliare|topánka|dáždnik|gitara
 bubon|kaktus|banán|jablko|mrkva|ananás|hamburger|torta|hríb|vajce
 ryba|žralok|motýľ|had|slon|žirafa|pavúk|tučniak|zajac|prasa
 snehová vločka|hrad|most|stan|sopka|duch|robot|snehuliak na lyžiach|snehová guľa|pivový pohár`,
-    4: `svadba|dopravná zápcha|vesmírna stanica|zábavný park|potápač|baletka|zubár|detektív|morská panna|čarodejnica
-záchranný čln|maják|veterný mlyn|šikmá veža|lietajúci koberec|poklad na ostrove|satelit|ponorka|lanovka|vodný skúter
-rozbité srdce|milostný list|romantická večera|prázdna peňaženka|svadobná kytica|tajný milenec|ráno po párty|bozk pod imelom|nočný klub|izba novomanželov
-Batman|Superman|SpongeBob|Olaf|Simba|Yoda|Pinocchio|Aladin|Grinch|Mickey Mouse
-bazén na streche|klietka pre vtáky|požiar v kuchyni|pes u veterinára|žena na kolobežke|mačka vo vani|santa v komíne|muž na mesiaci|vianočné trhy|trezor v banke`,
-    5: `slon v porceláne|vlk v ovčom rúchu|hlava v oblakoch|čas letí ako voda|láska na prvý pohľad|peniaze nerastú na stromoch|jablko nepadá ďaleko od stromu|ryba smrdí od hlavy|stena má uši|tretie koleso na voze
-svadba na opustenom ostrove|pes venčí svojho majiteľa|mačka kradne rybu rybárovi|žralok na nafukovacom kolese|snehuliak na letnej dovolenke|mimozemšťan nakupuje v supermarkete|upír na zubnej prehliadke|princezná opravuje pokazené auto|robot varí romantickú večeru|dinosaurus čaká na autobus
-rande uprostred dopravnej zápchy|svokra sleduje novomanželov ďalekohľadom|striptér na rodinnej oslave|milenci ukrytí v skrini|rozvodová hádka o psa|ženích uteká zo svadby|nevesta chytá svadobnú kyticu|záletník uteká cez balkón|bozk cez zavreté okno|policajt na rozlúčke so slobodou
-potopená loď plná pokladov|dve tváre jedného človeka|cesta okolo sveta balónom|hasič zachraňuje draka z ohňa|veľryba v malom bazéne|medveď kradne med včelám|pirát hľadá stratenú protézu|astronaut griluje na mesiaci|čarodejník stratil čarovnú paličku|lietadlo pristáva na diaľnici
-útek z prísne stráženého väzenia|časovaná bomba v darčeku|strom rastúci cez dom|rebrík vedúci do neba|loď vo fľaši|búrka v pohári vody|človek medzi dvoma ohňami|slepá ulička plná áut|slnko schované za dáždnikom|krokodílie slzy`,
+    4: `svadba|potápač|baletka|zubár|detektív|čarodejnica|maják|satelit|ponorka|lanovka
+Batman|Aladin|Grinch|akordeón|ďalekohľad|kolotoč|fontána|labyrint|kompas|padák
+traktor|vrtuľník|sanitka|mikroskop|teplomer|pavučina|včelár|astronaut|kormidlo|skleník
+šachovnica|korčule|vodník|jednorožec|ježibaba|kominár|mušľa|chobotnica|pyramída|Mickey Mouse
+dopravná zápcha|vesmírna stanica|morská panna|záchranný čln|veterný mlyn|rozbité srdce|milostný list|svadobná kytica|nočný klub|vianočné trhy`,
+    5: `snehuliak na pláži|pes v lietadle|mačka hrá klavír|žralok vo vani|slon na bicykli|prasa v balóne|robot varí večeru|dinosaurus v autobuse|upír u zubára|pirát na lyžiach
+svadba na ostrove|rande pod dáždnikom|milenci v skrini|ženích na úteku|nevesta na motorke|bozk cez okno|striptér na oslave|srdce zo zlata|láska cez internet|svokra za dverami
+loď vo fľaši|búrka v pohári|dom na strome|rebrík do neba|poklad pod morom|hrad z piesku|stan na streche|vlak bez koľají|auto pod vodou|lietajúca posteľ
+hasič hasí draka|medveď kradne med|čarodejnica na vysávači|astronaut venčí psa|rybár chytá čižmu|krokodíl čistí zuby|žirafa nosí šál|tučniak predáva zmrzlinu|klaun v ponorke|zajac varí mrkvu
+pes naháňa poštára|slnko nosí okuliare|mačka chytá motýľa|ovečka skáče plot|mimozemšťan kupuje pizzu|ryba hrá futbal|včela nesie dáždnik|princezná riadi traktor|sova číta knihu|zlodej kradne tortu`,
   },
   pantomima: {
     3: `čistenie zubov|varenie polievky|jazda na bicykli|plávanie|lyžovanie|korčuľovanie|beh|skákanie cez švihadlo|zdvíhanie činiek|hranie futbalu
@@ -72,16 +72,16 @@ hranie tenisu|hranie golfu|bowling|rybárčenie|venčenie psa|umývanie okien|vy
 čítanie knihy|písanie na počítači|telefonovanie|fotografovanie|šoférovanie|lietajúci vták|spánok|zobúdzanie|kýchanie|štikútanie
 opitý človek|bozkávanie|flirtovanie|nanášanie rúžu|obliekanie nohavíc|chôdza na podpätkoch|holenie|česanie|sprchovanie|opaľovanie
 gitarista|bubeník|dirigent|čašník|boxer|kovboj|zombie|gorila|kura|žaba`,
-    4: `chôdza proti vetru|čakanie na meškajúci autobus|otváranie zaseknutej fľaše|stavanie stanu|výmena pneumatiky|vŕtanie do steny|chytanie komára|sťahovanie chladničky|skladanie nábytku|pečenie palaciniek
-pôrod|žiadosť o ruku|žonglovanie|chôdza po lane|jazda na koni|skok padákom|potápanie s prístrojom|horolezectvo|tanec pri tyči|striptíz s hanblivosťou
-Jackie Chan|Charlie Chaplin|Cristiano Ronaldo|Usain Bolt|Michael Phelps|Marilyn Monroe|Indiana Jones|Rocky Balboa|Terminátor|Streda Addamsová
-žuvačka prilepená na topánke|zabuchnuté dvere|hľadanie okuliarov na hlave|horúci piesok na pláži|stúpanie po pohyblivých schodoch|strach z pavúka|skúšanie tesných šiat|nasadzovanie kontaktných šošoviek|odtrhnutý gombík|zaseknutý zips
-prvé stretnutie so svokrou|tajný odchod z rande|ranné hľadanie oblečenia|tanec po priveľa drinkoch|kontrola dychu pred bozkom|masáž chrbta|žehlenie košele na tele|pokus o zvádzanie|schovávanie darčeka|oslava výhry v lotérii`,
-    5: `človek sa učí lietať|čašník na rozbúrenej lodi|zlodej v dome plnom lega|opitý kúzelník pred publikom|žonglér na klzkom ľade|astronaut hľadá stratenú rukavicu|potápačovi došiel pod vodou vzduch|upír sa bojí injekcie|superhrdina stratil svoje schopnosti|baletka s nohou v sadre
-predstieraný orgazmus|milenecká hádka cez zatvorené okno|rande s veľmi nudným človekom|útek pred žiarlivým manželom|zvádzanie pri výpadku elektriny|bozkávanie počas jazdy autobusom|obliekanie podprsenky jednou rukou|svokra prekazila romantickú chvíľu|striptíz v príliš tesnom oblečení|príchod domov po tajnej párty
-operácia počas silného zemetrasenia|varenie s neviditeľnými surovinami|rybár vytiahol obrovskú čižmu|fotograf naháňa neposlušnú žirafu|kaderník strihá spiaceho zákazníka|zubár sa bojí vlastného pacienta|pes učí človeka aportovať|robot prvýkrát ochutnáva citrón|snehuliak sa topí na slnku|pirát tancuje s drevenou nohou
-nosiť vodu v deravom vedre|chytať vlastný tieň|potichu kráčať cez vŕzgajúcu podlahu|zápasiť s neposlušným dáždnikom|hrať tenis bez rakety|predstierať prácu pred šéfom|skrývať zívanie počas porady|kradnúť koláč zo zamknutej skrine|pokúšať sa zastaviť kýchnutie|hľadať telefón počas telefonovania
-rodič prebaľuje veľmi živé dieťa|človek uviaznutý v točivých dverách|tajný agent prezlečený za upratovačku|modelka na rozbitom móle|žonglovanie s horúcimi zemiakmi|strážiť spiaceho draka|uhýbať neviditeľným laserovým lúčom|naháňať parochňu vo vetre|hrať šach sám so sebou|niesť obrovskú neviditeľnú skriňu`,
+    4: `žonglovanie|horolezectvo|pôrod|krasokorčuľovanie|veslovanie|šermovanie|lukostreľba|surfovanie|šnorchlovanie|potápanie
+kosenie|rúbanie|zametanie|maľovanie|štrikovanie|vyšívanie|miesenie|šúpanie|odšťavovanie|dojenie
+koketovanie|zvádzanie|žiarlenie|hanbenie|chvastanie|špehovanie|odpočúvanie|dirigovanie|modelkovanie|čarovanie
+kŕč|námestníčnosť|zimnica|pálenie záhy|bolesť chrbta|skok padákom|výmena pneumatiky|chytanie komára|pečenie palaciniek|zaseknutý zips
+Jackie Chan|Charlie Chaplin|Cristiano Ronaldo|Usain Bolt|Michael Phelps|Marilyn Monroe|Indiana Jones|Rocky Balboa|Terminátor|Streda Addamsová`,
+    5: `opitý čašník|slepý fotograf|ospalý boxer|hanblivý striptér|nervózny ženích|žiarlivá partnerka|lenivý upratovač|prekvapený zlodej|premrznutý plavčík|zábudlivý kúzelník
+chôdza po ľade|beh v podpätkoch|plávanie proti prúdu|tanec s metlou|varenie bez rúk|skákanie vo vreci|spievanie v sprche|spánok v autobuse|líčenie vo vlaku|jedenie horúcej polievky
+hľadanie strateného prsteňa|otváranie zaseknutého dáždnika|naháňanie uleteného klobúka|nosenie ťažkej skrine|vyťahovanie tesných nohavíc|obúvanie malých topánok|chytanie myši rukami|prenášanie horúceho hrnca|tajné jedenie čokolády|schovávanie milostného listu
+prvé rande naslepo|bozkávanie cez sklo|útek pred svokrou|predstieraný orgazmus|zvádzanie na diskotéke|masáž šteklivého človeka|rozopínanie zaseknutej podprsenky|tancovanie s partnerom|žiadanie o ruku|odmietnutie nechceného bozku
+robot sa učí tancovať|upír pije horúci čaj|kovboj chytá divokého koňa|baletka nesie ťažký kufor|pirát hľadá skrytý poklad|kaderník strihá spiaceho zákazníka|pes si naháňa chvost|rybár vyťahuje veľkú rybu|človek prehltol kyslý citrón|futbalista predstiera zranenie`,
   },
 };
 export const normalize = (text: string) =>
