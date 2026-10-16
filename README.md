@@ -29,7 +29,7 @@ bun run start
 
 Používame Next.js 16 App Router, TypeScript, Tailwind CSS 4 cez oficiálny PostCSS plugin a lokálne balené fonty Nunito. `bun.lock` je jediný lockfile. Žiadne premenné prostredia ani externé služby nie sú potrebné.
 
-Na Verceli importujte tento GitHub repozitár, vyberte framework **Next.js**, inštaláciu `bun install --frozen-lockfile` a build `bun run build`. Koreň projektu je koreň repozitára. Nezadávajte vlastný Output Directory. V tejto fáze projekt nie je nasadený na Vercel.
+Na Verceli importujte tento GitHub repozitár, vyberte framework **Next.js**, inštaláciu `bun install --frozen-lockfile` a build `bun run build`. Koreň projektu je koreň repozitára. Nezadávajte vlastný Output Directory.
 
 Oficiálne podklady: [Next.js setup](https://nextjs.org/docs/app/getting-started/installation), [Tailwind s Next.js](https://tailwindcss.com/docs/installation/framework-guides/nextjs), [Bun a Next.js](https://bun.sh/guides/ecosystem/nextjs).
 
@@ -46,7 +46,7 @@ Oficiálne podklady: [Next.js setup](https://nextjs.org/docs/app/getting-started
 
 ## Ukladanie
 
-Každá herná zmena sa synchronizovane zapisuje do `localStorage` ešte pred zobrazením nového stavu. Ukladá sa celý stav: tímy, poradie, skóre, aktivita, zadanie, použité slová, výsledky, fáza, skrytie aj absolútny čas konca. Záložná kópia pomáha pri poškodení hlavného záznamu. Nastavenia novej hry majú vlastný záznam.
+Stav spravuje provider-local Zustand store s middleware `persist`, explicitnou hydratáciou po mountnutí a selektormi. Každá herná zmena sa synchronizovane zapisuje do `localStorage` pred vykreslením nového stavu. Ukladá sa celý stav: tímy, poradie, skóre, aktivita, zadanie, použité slová, výsledky, fáza, skrytie aj absolútny čas konca. Záložná kópia pomáha pri poškodení hlavného záznamu. Nový záznam `aktivity.store.v1` obsahuje partiu aj rozpracované nastavenia; `.backup` je jeho synchronizovaná záloha. Pri prvom načítaní sa automaticky importujú pôvodné záznamy `aktivity.game.v1`, jeho záloha a `aktivity.setup.v1`. Pôvodné záznamy zostávajú nedotknuté. Poškodený nový záznam sa obnovuje zo svojej novej zálohy; nikdy sa potichu nevracia na staré skóre z legacy dát.
 
 Obnovenie aj návrat na adresu hry automaticky otvoria poslednú partiu. Žiadne interné prechody nevytvárajú nové URL ani históriu navigácie. Zatvorenie stránky alebo odchod späť z prehliadača stav nemaže. Pri návrate po uplynutí limitu sa ťah vyhodnotí ako neúspešný. Menu ani prepnutie aplikácie čas nepozastavujú.
 
@@ -56,7 +56,15 @@ Obnovenie aj návrat na adresu hry automaticky otvoria poslednú partiu. Žiadne
 
 - `lib/game.ts`: samostatné typy a prechody herného stavu, validácia uloženia, bodovanie.
 - `lib/words.ts`: 450 vlastných slovenských zadaní; presne 50 pre každú aktivitu a bodovú hodnotu.
-- `components/`: herné rozhranie a vlastné SVG ilustrácie.
-- `tests/game.test.ts`: pravidlá, čas, vyváženie, obsah a obnovenie stavov.
+- `stores/`: Zustand store, SSR-safe provider, validované ukladanie a migrácia starých dát.
+- `lib/setup.ts`: zdieľané Zod schémy pre rozpracovaný a odoslaný formulár.
+- `components/screens/`: úvod a nastavenie hry cez React Hook Form, Zod resolver, `useFieldArray`, `Controller` a odber zmien rozpracovaného formulára.
+- `components/game/`: samostatné obrazovky jednotlivých fáz partie.
+- `components/ui/`: spoločné tlačidlá, prepínače, segmentované voľby, validačné chyby a herné oznamy. Tailwind triedy sa skladajú cez `clsx` a `tailwind-merge`.
+- `hooks/`: samostatný runtime časovača/zvukov a lokálne odpočítavanie, ktoré neprepisuje úložisko pri každom tiknutí.
+- `app/globals.css`: iba vstup Tailwindu, téma a animácie; žiadne vlastné CSS selektory rozhrania.
+- `tests/`: pravidlá, čas, zvuky, obsah, Zod validácia, migrácia starého úložiska, zálohy, SSR izolácia a obnova stavov.
 
 Bodová náročnosť je redakčný odhad, nezávislý pre jednotlivé aktivity. Automatické testy kontrolujú počty, jedinečnosť v zásobníkoch a neopakovanie normalizovaného textu počas partie. Jemné vyváženie zadaní si vyžiada aj hranie s reálnou skupinou.
+
+Refaktoring vychádza z oficiálnych dokumentácií: [Zustand pre Next.js](https://zustand.docs.pmnd.rs/learn/guides/nextjs), [Zustand persist](https://zustand.docs.pmnd.rs/reference/middlewares/persist), [React Hook Form Zod resolver](https://github.com/react-hook-form/resolvers#zod) a [Zod](https://zod.dev/).

@@ -7,10 +7,9 @@ export type TurnScreenProps = {
   info: (typeof activityInfo)[keyof typeof activityInfo];
   last: Game["history"][number] | undefined;
   allWinners: Game["teams"];
-  remaining: number;
   dispatch: (action: Action) => void;
   startTimer: (now: number) => void;
   startNew: () => void;
-  apply: (game: Game) => void;
+  replay: () => void;
   headingRef: RefObject<HTMLHeadingElement | null>;
 };

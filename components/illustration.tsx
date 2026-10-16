@@ -8,7 +8,7 @@ export function Illustration({
 }) {
   return (
     <svg
-      className={`illustration ${className}`}
+      className={`block overflow-visible ${className}`}
       viewBox="0 0 320 220"
       fill="none"
       aria-hidden="true"
