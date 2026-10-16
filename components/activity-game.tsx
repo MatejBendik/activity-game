@@ -757,28 +757,33 @@ export default function ActivityGame() {
                 )}
                 {phase === "handoff" && (
                   <>
-                    <span className="eyebrow">
-                      {team.name} · {info.short} · {game.turn.word?.points}{" "}
-                      {game.turn.word?.points === 5 ? "bodov" : "body"}
-                    </span>
+                    <div className="handoff-context">
+                      <span className="eyebrow">{team.name}</span>
+                      {game.turn.open && (
+                        <div className="open-banner">
+                          <Users size={17} />
+                          Hádajú všetci!
+                        </div>
+                      )}
+                    </div>
                     <Illustration
                       activity={game.turn.activity}
                       className="handoff-art"
                     />
-                    <h1 className="stage-title" ref={headingRef} tabIndex={-1}>
-                      Teraz iba ty.
+                    <h1 className="handoff-task" ref={headingRef} tabIndex={-1}>
+                      <span style={{ color: info.color }}>{info.short}</span>
+                      <span className="handoff-points">
+                        · {game.turn.word?.points}{" "}
+                        {game.turn.word?.points === 5 ? "bodov" : "body"}
+                      </span>
                     </h1>
                     <p className="stage-description">
+                      <strong>Teraz iba ty.</strong>
+                      <br />
                       Odovzdajte mobil predvádzajúcemu.
                       <br />
                       Ostatní, oči preč!
                     </p>
-                    {game.turn.open && (
-                      <div className="open-banner">
-                        <Users size={17} />
-                        Potom hádajú všetky tímy.
-                      </div>
-                    )}
                     <button
                       className="button primary stage-button"
                       onClick={() => dispatch({ type: "reveal" })}
