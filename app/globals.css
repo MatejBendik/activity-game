@@ -723,8 +723,9 @@ button svg {
   width: fit-content;
   max-width: 100%;
   border-radius: 11px;
-  padding: 10px 15px;
-  font-size: 12px;
+  padding: 14px 20px;
+  font-size: 14px;
+  line-height: 1.5;
   font-weight: 800;
   margin: 0 auto 22px;
 }
@@ -1479,4 +1480,8 @@ button svg {
 .privacy-note > svg {
   flex-shrink: 0;
   margin-top: 3px;
+}
+
+.instruction + .open-banner {
+  margin-top: 24px;
 }

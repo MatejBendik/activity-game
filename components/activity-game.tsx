@@ -25,6 +25,7 @@ import {
   VolumeX,
   X,
 } from "lucide-react";
+import { playCue } from "@/lib/sound";
 import { Illustration } from "./illustration";
 import { Modal, Rules, TeamScores } from "./game-ui";
 import {
@@ -101,27 +102,11 @@ export default function ActivityGame() {
     }
   };
   const beep = () => {
-    const ctx = audio.current;
-    if (!ctx || !gameRef.current?.settings.sound) return;
-    void ctx
-      .resume()
-      .then(() => {
-        for (let i = 0; i < 3; i++) {
-          const oscillator = ctx.createOscillator();
-          const gain = ctx.createGain();
-          oscillator.type = "sine";
-          oscillator.frequency.value = i === 2 ? 520 : 740;
-          const start = ctx.currentTime + i * 0.2;
-          gain.gain.setValueAtTime(0, start);
-          gain.gain.linearRampToValueAtTime(0.12, start + 0.015);
-          gain.gain.exponentialRampToValueAtTime(0.001, start + 0.17);
-          oscillator.connect(gain);
-          gain.connect(ctx.destination);
-          oscillator.start(start);
-          oscillator.stop(start + 0.18);
-        }
-      })
-      .catch(() => {});
+    void playCue(
+      audio.current,
+      gameRef.current?.settings.sound ?? false,
+      "timeUp",
+    );
   };
   useEffect(() => {
     let cancelled = false;
@@ -256,9 +241,22 @@ export default function ActivityGame() {
     setView("game");
   };
   const startTimer = (time: number) => {
-    if (!audio.current && typeof AudioContext !== "undefined")
-      audio.current = new AudioContext();
-    void audio.current?.resume().catch(() => {});
+    const current = gameRef.current;
+    if (current?.phase !== "reveal") return;
+    try {
+      if (
+        (!audio.current || audio.current.state === "closed") &&
+        typeof AudioContext !== "undefined"
+      )
+        audio.current = new AudioContext();
+      if (current.turn.open) {
+        void playCue(audio.current, current.settings.sound, "everyone");
+      } else if (current.settings.sound) {
+        void audio.current?.resume().catch(() => {});
+      }
+    } catch {
+      // Unsupported or unavailable audio must not block gameplay.
+    }
     setNow(time);
     dispatch({ type: "start", now: time });
   };
@@ -615,13 +613,13 @@ export default function ActivityGame() {
               <section className="toggle-section sound-setting">
                 <div className="flex items-center gap-3">
                   <Volume2 size={18} />
-                  <span>Zvuk konca času</span>
+                  <span>Zvuky hry</span>
                 </div>
                 <button
                   className={`toggle ${draft.settings.sound ? "on" : ""}`}
                   role="switch"
                   aria-checked={draft.settings.sound}
-                  aria-label="Zvuk konca času"
+                  aria-label="Zvuky hry"
                   onClick={() =>
                     setDraft((d) => ({
                       ...d,
@@ -811,7 +809,7 @@ export default function ActivityGame() {
                         Spustiť čas
                       </button>
                       <p className="privacy-note">
-                        Zadanie počas hry môžeš skryť.
+                        Po spustení času sa zadanie automaticky skryje.
                       </p>
                     </div>
                   </>

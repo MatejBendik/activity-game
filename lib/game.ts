@@ -180,6 +180,7 @@ export function transition(
             turn: {
               ...game.turn,
               deadline: action.now + game.settings.seconds * 1000,
+              hidden: true,
             },
           }
         : game;

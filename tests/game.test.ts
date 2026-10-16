@@ -297,3 +297,19 @@ describe("saved prompt compatibility", () => {
     }
   });
 });
+
+describe("private timer start", () => {
+  test("starting every kind of turn hides its prompt automatically", () => {
+    for (const open of [true, false]) {
+      const base = newGame();
+      base.turn.open = open;
+      const g = playing(base);
+      expect(g.turn.hidden).toBe(true);
+      expect(deserialize(serialize(g))?.turn.hidden).toBe(true);
+      const visible = transition(g, { type: "hide" });
+      expect(visible.turn.hidden).toBe(false);
+      expect(visible.turn.deadline).toBe(g.turn.deadline);
+      expect(transition(visible, { type: "hide" }).turn.hidden).toBe(true);
+    }
+  });
+});
