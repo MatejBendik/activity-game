@@ -139,17 +139,6 @@ button svg {
   background: #eee8e0;
   color: var(--ink);
 }
-.app-footer {
-  max-width: 1100px;
-  width: 100%;
-  margin: auto auto 0;
-  padding: 28px 0 24px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  color: #96909a;
-}
 .footer-spark {
   color: #b4a4c6;
   font-size: 22px;
@@ -570,8 +559,12 @@ button svg {
   align-items: center;
   justify-content: space-between;
   color: #796c81;
-  font-size: 11px;
+
+  font-size: 14px;
   margin: 19px 0 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  line-height: 1.5;
 }
 .game-meta > span:last-child {
   display: flex;
@@ -663,11 +656,11 @@ button svg {
   letter-spacing: -2px;
 }
 .point-label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
 }
 .difficulty-name {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   margin-top: 12px;
   opacity: 0.8;
@@ -689,9 +682,11 @@ button svg {
 .privacy-note {
   display: flex;
   justify-content: center;
-  align-items: center;
+
+  align-items: flex-start;
   gap: 6px;
-  font-size: 11px;
+
+  font-size: 14px;
   color: #796c81;
   margin-top: 23px;
   line-height: 1.6;
@@ -701,9 +696,12 @@ button svg {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  font-size: 11px;
+
+  font-size: 14px;
   color: #796c81;
   margin: 10px auto 10px;
+  flex-wrap: wrap;
+  line-height: 1.5;
 }
 .game-bottom > span {
   margin: 0 6px;
@@ -760,7 +758,8 @@ button svg {
   background: #eee7f1;
   border-radius: 10px;
   padding: 10px 16px;
-  font-size: 12px;
+
+  font-size: 14px;
   font-weight: 800;
 }
 .word {
@@ -794,7 +793,8 @@ button svg {
   align-items: center;
   gap: 7px;
   color: #796c81;
-  font-size: 12px;
+
+  font-size: 14px;
 }
 .start-area .stage-button {
   margin-top: 15px;
@@ -876,6 +876,16 @@ button svg {
 }
 .hide-button {
   margin: 3px auto 16px;
+  min-height: 48px;
+  min-width: 200px;
+  padding: 12px 20px;
+  border: 1px solid #d6c4e8;
+  border-radius: 14px;
+  background: #eee6f5;
+  color: #6d459c;
+  box-shadow: 0 3px 0 #dfd0ec;
+  font-size: 14px;
+  font-weight: 800;
 }
 .answer-buttons {
   display: grid;
@@ -1213,10 +1223,6 @@ button svg {
   .activity-preview svg {
     width: 17px;
   }
-  .app-footer {
-    padding: 25px 0 19px;
-    font-size: 10px;
-  }
   .setup-view {
     margin-top: -5px;
   }
@@ -1259,7 +1265,11 @@ button svg {
   }
   .game-meta {
     margin-top: 15px;
-    font-size: 10px;
+
+    font-size: 14px;
+    flex-wrap: wrap;
+    gap: 8px;
+    line-height: 1.5;
   }
   .turn-content {
     margin-top: 28px;
@@ -1293,7 +1303,7 @@ button svg {
     font-size: 46px;
   }
   .difficulty-name {
-    font-size: 10px;
+    font-size: 13px;
     margin-top: 10px;
   }
   .difficulty-label {
@@ -1301,12 +1311,16 @@ button svg {
     margin-bottom: 14px;
   }
   .privacy-note {
-    font-size: 10px;
+    font-size: 14px;
     margin-top: 20px;
+    align-items: flex-start;
   }
   .game-bottom {
     margin-top: 0;
-    font-size: 10px;
+
+    font-size: 14px;
+    flex-wrap: wrap;
+    line-height: 1.5;
   }
   .handoff-art {
     width: 260px;
@@ -1346,6 +1360,16 @@ button svg {
   }
   .hide-button {
     margin-bottom: 18px;
+    min-height: 48px;
+    min-width: 200px;
+    padding: 12px 20px;
+    border: 1px solid #d6c4e8;
+    border-radius: 14px;
+    background: #eee6f5;
+    color: #6d459c;
+    box-shadow: 0 3px 0 #dfd0ec;
+    font-size: 14px;
+    font-weight: 800;
   }
   .answer-buttons {
     gap: 13px;
@@ -1425,9 +1449,6 @@ button svg {
     min-height: 78px;
     font-size: 26px;
   }
-  .app-footer {
-    padding-top: 15px;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -1437,4 +1458,25 @@ button svg {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+.reveal-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+.reveal-heading .eyebrow {
+  font-size: 13px;
+}
+.hide-button:hover {
+  background: #e4d7ef;
+  color: #603790;
+}
+.hide-button:active {
+  box-shadow: 0 1px 0 #dfd0ec;
+}
+.privacy-note > svg {
+  flex-shrink: 0;
+  margin-top: 3px;
 }

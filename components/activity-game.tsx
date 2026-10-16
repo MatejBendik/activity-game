@@ -772,16 +772,18 @@ export default function ActivityGame() {
                 )}
                 {phase === "reveal" && (
                   <>
-                    <span
-                      className="activity-tag"
-                      style={{ color: info.color }}
-                    >
-                      {info.name}
-                      <span>·</span>
-                      {game.turn.word?.points}{" "}
-                      {game.turn.word?.points === 5 ? "bodov" : "body"}
-                    </span>
-                    <span className="eyebrow mt-10">TVOJE ZADANIE</span>
+                    <div className="reveal-heading">
+                      <span
+                        className="activity-tag"
+                        style={{ color: info.color }}
+                      >
+                        {info.name}
+                        <span>·</span>
+                        {game.turn.word?.points}{" "}
+                        {game.turn.word?.points === 5 ? "bodov" : "body"}
+                      </span>
+                      <span className="eyebrow">TVOJE ZADANIE</span>
+                    </div>
                     <h1
                       className="word reveal-word"
                       ref={headingRef}
@@ -1076,10 +1078,6 @@ export default function ActivityGame() {
           )}
         </>
       )}
-      <footer className="app-footer">
-        <span>Dobrá partia je všetko, čo potrebuješ.</span>
-        <span className="footer-spark">✦</span>
-      </footer>
       {modal === "rules" && (
         <Modal title="Ako sa to hrá" onClose={() => setModal(null)}>
           <Rules />
