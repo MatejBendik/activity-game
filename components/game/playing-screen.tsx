@@ -1,4 +1,7 @@
 "use client";
+import { wordText } from "@/i18n/resources";
+import { useTranslation } from "react-i18next";
+
 import { Button } from "../ui/button";
 
 import { PrivacyNote } from "../ui/game-notices";
@@ -11,6 +14,7 @@ export function PlayingScreen({
   dispatch,
   headingRef,
 }: TurnScreenProps) {
+  const { t: tr } = useTranslation();
   const remaining = useCountdown(game.turn.deadline!);
   return (
     <>
@@ -19,12 +23,11 @@ export function PlayingScreen({
           className="inline-flex items-center justify-center gap-[9px] bg-[#eee7f1] rounded-[10px] pt-[10px] pb-[10px] pl-[16px] pr-[16px] text-[14px] font-extrabold"
           style={{ color: info.color }}
         >
-          {info.short} · {game.turn.word?.points} b.
+          {info.short} · {game.turn.word?.points} {tr("b.")}
         </span>
         {game.turn.open && (
           <span className="text-[#a57c32] flex items-center gap-[5px] text-[12px] font-extrabold">
-            <Users size={15} />
-            Všetci
+            <Users size={15} /> {tr("Všetci")}
           </span>
         )}
       </div>
@@ -32,7 +35,9 @@ export function PlayingScreen({
         className="w-[215px] h-[215px] m-[25px_auto_22px] relative text-purple [&_svg]:w-full [&_svg]:h-full [&_svg]:[transform:rotate(-90deg)] [&_circle]:fill-none [&_circle]:stroke-[8] [&_>_div]:absolute [&_>_div]:inset-0 [&_>_div]:flex [&_>_div]:flex-col [&_>_div]:items-center [&_>_div]:justify-center [&_strong]:text-[78px] [&_strong]:font-black [&_strong]:leading-[1] [&_strong]:tabular-nums [&_strong]:tracking-[-5px] [&_>_div_>_span]:text-[12px] [&_>_div_>_span]:font-extrabold [&_>_div_>_span]:text-[#796c81] [&_>_div_>_span]:mt-[7px] [&[data-urgent=true]]:text-[#cf666a] [&[data-urgent=true]_[data-slot=timer-track]]:stroke-[#f1ddda] max-[601px]:w-[195px] max-[601px]:h-[195px] max-[601px]:m-[23px_auto_18px] max-[601px]:[&_strong]:text-[70px] [@media(max-height:750px)_and_(max-width:600px)]:w-[160px] [@media(max-height:750px)_and_(max-width:600px)]:h-[160px] [@media(max-height:750px)_and_(max-width:600px)]:m-[17px_auto_12px] [@media(max-height:750px)_and_(max-width:600px)]:[&_strong]:text-[59px]"
         data-urgent={remaining <= 10000}
         role="timer"
-        aria-label={`Zostáva ${Math.ceil(remaining / 1000)} sekúnd`}
+        aria-label={tr("game.remaining", {
+          count: Math.ceil(remaining / 1000),
+        })}
       >
         <svg viewBox="0 0 220 220" aria-hidden="true">
           <circle
@@ -55,7 +60,9 @@ export function PlayingScreen({
         </svg>
         <div>
           <strong>{Math.ceil(remaining / 1000)}</strong>
-          <span>sekúnd</span>
+          <span>
+            {tr("secondsUnit", { count: Math.ceil(remaining / 1000) })}
+          </span>
         </div>
       </div>
       <h1
@@ -64,7 +71,9 @@ export function PlayingScreen({
         className="text-[clamp(27px,_5vw,_42px)] leading-[1.25] font-black tracking-[-1px] [overflow-wrap:anywhere] text-balance min-h-[100px] flex items-center justify-center m-[10px_0_0] [&[data-hidden=true]]:text-[#ad9db5] [&[data-hidden=true]]:text-[24px] max-[601px]:text-[29px] max-[601px]:min-h-[105px] max-[601px]:[&[data-hidden=true]]:text-[23px] [@media(max-height:750px)_and_(max-width:600px)]:min-h-[78px] [@media(max-height:750px)_and_(max-width:600px)]:text-[26px]"
         data-hidden={game.turn.hidden}
       >
-        {game.turn.hidden ? "Zadanie je skryté" : game.turn.word?.text}
+        {game.turn.hidden
+          ? tr("Zadanie je skryté")
+          : wordText(game.turn.word, tr)}
       </h1>
       <Button
         variant="text"
@@ -72,7 +81,7 @@ export function PlayingScreen({
         onClick={() => dispatch({ type: "hide" })}
       >
         {game.turn.hidden ? <Eye size={18} /> : <EyeOff size={18} />}
-        {game.turn.hidden ? "Zobraziť zadanie" : "Skryť zadanie"}
+        {game.turn.hidden ? tr("Zobraziť zadanie") : tr("Skryť zadanie")}
       </Button>
       <div className="grid grid-cols-2 gap-[16px] max-[601px]:gap-[13px]">
         <button
@@ -86,7 +95,7 @@ export function PlayingScreen({
           }
         >
           <X size={31} strokeWidth={3} />
-          <span>Neuhádnuté</span>
+          <span>{tr("Neuhádnuté")}</span>
         </button>
         <button
           className="min-h-[90px] rounded-[20px] flex flex-col items-center justify-center gap-[7px] text-[13px] font-extrabold max-[601px]:min-h-[91px] text-[#fff] bg-[#438d73] shadow-[0_4px_0_#2b6e58] hover:bg-[#367e65]"
@@ -99,10 +108,10 @@ export function PlayingScreen({
           }
         >
           <Check size={33} strokeWidth={3} />
-          <span>Uhádnuté</span>
+          <span>{tr("Uhádnuté")}</span>
         </button>
       </div>
-      <PrivacyNote>Odpoveď potvrď ešte pred koncom času.</PrivacyNote>
+      <PrivacyNote>{tr("Odpoveď potvrď ešte pred koncom času.")}</PrivacyNote>
     </>
   );
 }

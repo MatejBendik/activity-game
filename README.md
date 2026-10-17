@@ -1,6 +1,6 @@
 # Aktivity
 
-Slovenská spoločenská hra pre 2–6 tímov na jednom spoločnom mobile. Opis, kreslenie na papier a pantomíma, vlastné zadania za 3/4/5 bodov a príležitostné otvorené ťahy. Obsah je určený dospelým (18+).
+Dvojjazyčná spoločenská hra (SK/EN) pre 2–6 tímov na jednom spoločnom mobile. Opis, kreslenie na papier a pantomíma, vlastné zadania za 3/4/5 bodov a príležitostné otvorené ťahy. Obsah je určený dospelým (18+).
 
 ## Lokálny vývoj
 
@@ -68,3 +68,16 @@ Obnovenie aj návrat na adresu hry automaticky otvoria poslednú partiu. Žiadne
 Bodová náročnosť je redakčný odhad, nezávislý pre jednotlivé aktivity. Automatické testy kontrolujú počty, jedinečnosť v zásobníkoch a neopakovanie normalizovaného textu počas partie. Jemné vyváženie zadaní si vyžiada aj hranie s reálnou skupinou.
 
 Refaktoring vychádza z oficiálnych dokumentácií: [Zustand pre Next.js](https://zustand.docs.pmnd.rs/learn/guides/nextjs), [Zustand persist](https://zustand.docs.pmnd.rs/reference/middlewares/persist), [React Hook Form Zod resolver](https://github.com/react-hook-form/resolvers#zod) a [Zod](https://zod.dev/).
+
+## Jazyky (i18next)
+
+Angličtina je predvolená; prepínač **SK / EN** v navigácii okamžite preloží celé rozhranie aj aktuálne zadanie. Voľba sa ukladá nezávisle od partie pod `aktivity.language.v1` a obnoví sa po načítaní stránky. Zmena jazyka nežrebuje nové slovo, nemení skóre, poradie, históriu ani absolútny koniec časovača. Vlastné názvy tímov zostávajú zachované; predvolené názvy, predvoľba Muži/Ženy a číslované tímy sa lokalizujú.
+
+- `i18n/instance.ts`: samostatná inštancia i18next pre každý provider, bez zdieľania jazyka medzi SSR požiadavkami.
+- `i18n/provider.tsx`: React provider, zapamätanie voľby, jazyk dokumentu a metadáta.
+- `i18n/locales/{sk,en}.json`: úplné katalógy rozhrania vrátane pravidiel, validačných a úložiskových chýb; slovenské plurály cez i18next.
+- `i18n/words-en.ts`: anglické preklady všetkých 450 zadaní v rovnakom poradí ako pôvodné slovenské zásobníky. Pri pridávaní alebo presúvaní zadania upravte zodpovedajúci riadok v oboch súboroch.
+- `i18n/resources.ts`: mapovanie prekladov na pôvodný normalizovaný text. Identifikátory a uložené slovenské zadania zostávajú stabilné, takže jazyk nemení pravidlá neopakovania.
+- `tests/i18n.test.tsx`: úplnosť prekladov, interpolácia, plurály, všetky herné obrazovky v oboch jazykoch a zachovanie partie pri prepnutí.
+
+Preklady sú zabalené v aplikácii; nevyžadujú API ani sieťové načítanie. Značka **aktivity.** sa nemení. Dokumentácia: [i18next](https://www.i18next.com/) a [react-i18next](https://react.i18next.com/latest/using-with-hooks).

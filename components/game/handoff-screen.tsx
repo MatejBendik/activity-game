@@ -1,4 +1,7 @@
 "use client";
+import { teamName } from "@/i18n/resources";
+import { useTranslation } from "react-i18next";
+
 import { Button } from "../ui/button";
 
 import { OpenRoundNotice } from "../ui/game-notices";
@@ -13,6 +16,7 @@ export function HandoffScreen({
   dispatch,
   headingRef,
 }: TurnScreenProps) {
+  const { t: tr } = useTranslation();
   return (
     <>
       <div className="flex flex-col items-center gap-[14px] [&_[data-slot=open-banner]]:m-0">
@@ -20,9 +24,11 @@ export function HandoffScreen({
           className="max-w-full text-[clamp(30px,_6vw,_38px)] font-black leading-[1.2] tracking-[-0.8px] [overflow-wrap:anywhere]"
           style={{ color: team.color }}
         >
-          {team.name}
+          {teamName(team.name, tr)}
         </span>
-        {game.turn.open && <OpenRoundNotice>Hádajú všetci!</OpenRoundNotice>}
+        {game.turn.open && (
+          <OpenRoundNotice>{tr("Hádajú všetci!")}</OpenRoundNotice>
+        )}
       </div>
       <Illustration
         activity={game.turn.activity}
@@ -36,27 +42,23 @@ export function HandoffScreen({
         <span style={{ color: info.color }}>{info.short}</span>
         <span className="whitespace-nowrap">
           · {game.turn.word?.points}{" "}
-          {game.turn.word?.points === 5 ? "bodov" : "body"}
+          {tr("pointsUnit", { count: game.turn.word?.points ?? 0 })}
         </span>
       </h1>
       <p className="text-[15px] text-[#796c81] leading-[1.7] m-[12px_0_25px] max-[601px]:text-[14px]">
-        <strong>Teraz iba ty.</strong>
-        <br />
-        Odovzdajte mobil predvádzajúcemu.
-        <br />
-        Ostatní, oči preč!
+        <strong>{tr("Teraz iba ty.")}</strong>
+        <br /> {tr("Odovzdajte mobil predvádzajúcemu.")} <br />{" "}
+        {tr("Ostatní, oči preč!")}
       </p>
       <Button
         className="w-full max-w-[380px] m-[28px_auto_0]"
         data-slot="stage-button"
         onClick={() => dispatch({ type: "reveal" })}
       >
-        <Eye size={21} />
-        Ukázať moje zadanie
+        <Eye size={21} /> {tr("Ukázať moje zadanie")}
       </Button>
       <PrivacyNote>
-        <ShieldCheck size={15} />
-        Čas sa ešte nespustí.
+        <ShieldCheck size={15} /> {tr("Čas sa ešte nespustí.")}
       </PrivacyNote>
     </>
   );

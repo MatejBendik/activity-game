@@ -1,4 +1,7 @@
 "use client";
+import { teamName, wordText } from "@/i18n/resources";
+import { useTranslation } from "react-i18next";
+
 import { Eyebrow } from "../ui/eyebrow";
 
 import { Button } from "../ui/button";
@@ -13,6 +16,7 @@ export function ResultScreen({
   dispatch,
   headingRef,
 }: TurnScreenProps) {
+  const { t: tr } = useTranslation();
   if (!last) return null;
   return (
     <>
@@ -27,16 +31,18 @@ export function ResultScreen({
           <X size={44} strokeWidth={3} />
         )}
       </div>
-      <Eyebrow>{last.expired ? "ČAS VYPRŠAL" : "ŤAH JE ZA NAMI"}</Eyebrow>
+      <Eyebrow>
+        {last.expired ? tr("ČAS VYPRŠAL") : tr("ŤAH JE ZA NAMI")}
+      </Eyebrow>
       <h1
         className="font-black tracking-[-1.4px] text-[37px] leading-[1.18] mt-[12px] mb-[12px] ml-0 mr-0 max-[601px]:text-[31px]"
         ref={headingRef}
         tabIndex={-1}
       >
-        {last.winnerId ? "Máte to!" : "Nabudúce to vyjde."}
+        {last.winnerId ? tr("Máte to!") : tr("Nabudúce to vyjde.")}
       </h1>
       <p className="text-[#8a7b94] m-[20px_auto_25px] text-[20px] leading-[1.4] [overflow-wrap:anywhere] max-[601px]:text-[18px]">
-        {last.word.text}
+        {wordText(last.word, tr)}
       </p>
       <div
         className="flex justify-center gap-[35px] m-[26px_0_35px] [&_>_div]:flex [&_>_div]:flex-col [&_>_div]:gap-[6px] [&_>_div]:text-[14px] [&_>_div]:font-extrabold [&_>_div]:[overflow-wrap:anywhere] [&_strong]:text-[44px] [&_strong]:font-black [&_small]:text-[14px] max-[601px]:gap-[24px] max-[601px]:[&_strong]:text-[40px]"
@@ -50,18 +56,20 @@ export function ResultScreen({
                 color: game.teams.find((t) => t.id === id)?.color,
               }}
             >
-              <span>{game.teams.find((t) => t.id === id)?.name}</span>
+              <span>
+                {teamName(game.teams.find((t) => t.id === id)?.name ?? "", tr)}
+              </span>
               <strong>
                 +{points}
-                <small> {points === 5 ? "bodov" : "body"}</small>
+                <small> {tr("pointsUnit", { count: points })}</small>
               </strong>
             </div>
           ))
         ) : (
           <div>
-            <span>{team.name}</span>
+            <span>{teamName(team.name, tr)}</span>
             <strong>
-              +0<small> bodov</small>
+              +0<small> {tr("bodov")}</small>
             </strong>
           </div>
         )}
@@ -71,7 +79,7 @@ export function ResultScreen({
         data-slot="stage-button"
         onClick={() => dispatch({ type: "next" })}
       >
-        {allWinners.length ? "Pozrieť výsledky" : "Ďalší tím"}
+        {allWinners.length ? tr("Pozrieť výsledky") : tr("Ďalší tím")}
         <ArrowRight size={21} />
       </Button>
       {last.winnerId && (
@@ -80,8 +88,7 @@ export function ResultScreen({
           className="mt-[15px] text-[11px]"
           onClick={() => dispatch({ type: "undo" })}
         >
-          <RotateCcw size={15} />
-          Opraviť: nebolo to uhádnuté
+          <RotateCcw size={15} /> {tr("Opraviť: nebolo to uhádnuté")}
         </Button>
       )}
     </>

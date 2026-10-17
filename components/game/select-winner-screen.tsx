@@ -1,4 +1,7 @@
 "use client";
+import { teamName } from "@/i18n/resources";
+import { useTranslation } from "react-i18next";
+
 import { Eyebrow } from "../ui/eyebrow";
 
 import { PrivacyNote } from "../ui/game-notices";
@@ -11,6 +14,7 @@ export function SelectWinnerScreen({
   dispatch,
   headingRef,
 }: TurnScreenProps) {
+  const { t: tr } = useTranslation();
   return (
     <>
       <div
@@ -19,16 +23,16 @@ export function SelectWinnerScreen({
       >
         <Check size={44} strokeWidth={3} />
       </div>
-      <Eyebrow>UHÁDNUTÉ VČAS</Eyebrow>
+      <Eyebrow>{tr("UHÁDNUTÉ VČAS")}</Eyebrow>
       <h1
         className="font-black tracking-[-1.4px] text-[37px] leading-[1.18] mt-[12px] mb-[12px] ml-0 mr-0 max-[601px]:text-[31px]"
         ref={headingRef}
         tabIndex={-1}
       >
-        Kto to vedel?
+        {tr("Kto to vedel?")}
       </h1>
       <p className="text-[15px] text-[#796c81] leading-[1.7] m-[12px_0_25px] max-[601px]:text-[14px]">
-        Vyber tím, ktorý uhádol ako prvý.
+        {tr("Vyber tím, ktorý uhádol ako prvý.")}
       </p>
       <div className="grid gap-[12px] m-[30px_0_15px]">
         {game.teams.map((t) => (
@@ -39,7 +43,7 @@ export function SelectWinnerScreen({
             onClick={() => dispatch({ type: "winner", teamId: t.id })}
           >
             <span className="inline-block w-[8px] h-[8px] min-w-[8px] rounded-[50%] bg-[var(--team)]" />
-            {t.name}
+            {teamName(t.name, tr)}
             <span>
               +{game.turn.word?.points}
               <ChevronRight size={20} />
@@ -47,7 +51,9 @@ export function SelectWinnerScreen({
           </button>
         ))}
       </div>
-      <PrivacyNote>Ak uhádne súper, {team.name} získajú 2 body.</PrivacyNote>
+      <PrivacyNote>
+        {tr("game.bonus", { team: teamName(team.name, tr) })}
+      </PrivacyNote>
     </>
   );
 }

@@ -1,4 +1,7 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
+import { LanguageProvider } from "@/i18n/provider";
 import { useEffect, useRef } from "react";
 import { AppHeader } from "./app-header";
 import { AppDialogs } from "./app-dialogs";
@@ -9,6 +12,7 @@ import { GameProvider, useGameStore } from "@/stores/game-provider";
 import { useGameRuntime } from "@/hooks/use-game-runtime";
 
 function GameApp() {
+  const { t: tr } = useTranslation();
   const game = useGameStore((s) => s.game);
   const ready = useGameStore((s) => s.ready);
   const view = useGameStore((s) => s.view);
@@ -26,7 +30,10 @@ function GameApp() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [view, game?.phase, game?.turnNumber]);
   const turnLabel = game
-    ? `Ťah ${game.turnNumber} · ${Math.floor((game.turnNumber - 1) / game.teams.length) + 1}. kolo`
+    ? tr("game.turn", {
+        turn: game.turnNumber,
+        round: Math.floor((game.turnNumber - 1) / game.teams.length) + 1,
+      })
     : "";
   return (
     <div className="min-h-[100svh] flex flex-col pt-0 pb-0 pl-[36px] pr-[36px] max-[601px]:pt-0 max-[601px]:pb-0 max-[601px]:pl-[22px] max-[601px]:pr-[22px] max-[361px]:pt-0 max-[361px]:pb-0 max-[361px]:pl-[16px] max-[361px]:pr-[16px]">
@@ -36,13 +43,13 @@ function GameApp() {
           className="text-[13px] rounded-[12px] bg-[#f6e4c9] text-[#945f28] pt-[14px] pb-[14px] pl-[18px] pr-[18px] max-w-[760px] m-[0_auto_16px] w-full"
           role="alert"
         >
-          {storageError}
+          {tr(storageError)}
         </div>
       )}
       {!ready ? (
         <main className="min-h-[60svh] flex items-center justify-center gap-[12px] font-extrabold text-[#9b85ac]">
-          <span className="w-[10px] h-[10px] rounded-[50%] bg-purple motion-safe:animate-soft-pulse" />
-          Pripravujeme hru…
+          <span className="w-[10px] h-[10px] rounded-[50%] bg-purple motion-safe:animate-soft-pulse" />{" "}
+          {tr("Pripravujeme hru…")}
         </main>
       ) : (
         <>
@@ -80,8 +87,10 @@ function GameApp() {
 }
 export default function ActivityGame() {
   return (
-    <GameProvider>
-      <GameApp />
-    </GameProvider>
+    <LanguageProvider>
+      <GameProvider>
+        <GameApp />
+      </GameProvider>
+    </LanguageProvider>
   );
 }

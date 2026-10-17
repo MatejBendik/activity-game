@@ -1,4 +1,7 @@
 "use client";
+import { teamName } from "@/i18n/resources";
+import { useTranslation } from "react-i18next";
+
 import { Eyebrow } from "../ui/eyebrow";
 
 import { OpenRoundNotice } from "../ui/game-notices";
@@ -15,19 +18,20 @@ export function ChooseScreen({
   dispatch,
   headingRef,
 }: TurnScreenProps) {
+  const { t: tr } = useTranslation();
   return (
     <>
       {game.turn.open && (
-        <OpenRoundNotice>Tento ťah hádajú všetci!</OpenRoundNotice>
+        <OpenRoundNotice>{tr("Tento ťah hádajú všetci!")}</OpenRoundNotice>
       )}
-      <Eyebrow>NA RADE JE TÍM</Eyebrow>
+      <Eyebrow>{tr("NA RADE JE TÍM")}</Eyebrow>
       <h1
         className="text-[clamp(36px,_5vw,_49px)] font-black tracking-[-1.8px] leading-[1.18] m-[6px_0_0] [overflow-wrap:anywhere] max-[601px]:text-[39px] max-[361px]:text-[35px]"
         style={{ color: team.color }}
         ref={headingRef}
         tabIndex={-1}
       >
-        {team.name}
+        {teamName(team.name, tr)}
       </h1>
       <Illustration
         activity={game.turn.activity}
@@ -41,7 +45,7 @@ export function ChooseScreen({
       </p>
       <div className="mt-[32px] max-[601px]:mt-[28px] [@media(max-height:750px)_and_(max-width:600px)]:mt-[21px]">
         <p className="text-[14px] font-extrabold text-[#7e728b] mb-[15px] max-[601px]:text-[13px] max-[601px]:mb-[14px]">
-          Na koľko bodov si trúfaš?
+          {tr("Na koľko bodov si trúfaš?")}
         </p>
         <div className="grid grid-cols-3 gap-[13px] max-[601px]:gap-[11px]">
           {([3, 4, 5] as Points[]).map((p, i) => (
@@ -58,24 +62,25 @@ export function ChooseScreen({
               </span>
               <strong>{p}</strong>
               <span className="text-[14px] font-extrabold">
-                {p === 5 ? "bodov" : "body"}
+                {tr("pointsUnit", { count: p })}
               </span>
               <span className="text-[13px] font-bold mt-[12px] opacity-[0.8] max-[601px]:text-[13px] max-[601px]:mt-[10px]">
-                {["Pohoda", "Výzva", "Odvaha"][i]}
+                {[tr("Pohoda"), tr("Výzva"), tr("Odvaha")][i]}
               </span>
             </button>
           ))}
         </div>
         <PrivacyNote>
-          <EyeOff size={14} />
-          Zadanie uvidíš až po výbere bodov.
+          <EyeOff size={14} /> {tr("Zadanie uvidíš až po výbere bodov.")}
         </PrivacyNote>
         {availablePoints(game).length === 0 && (
           <p
             role="status"
             className="text-[#b1464e] text-[13px] mt-[10px] mb-[10px] ml-0 mr-0"
           >
-            Všetky zadania tejto aktivity ste už odohrali. Začnite novú hru.
+            {tr(
+              "Všetky zadania tejto aktivity ste už odohrali. Začnite novú hru.",
+            )}
           </p>
         )}
       </div>

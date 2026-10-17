@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ReactNode } from "react";
 export function SegmentedControl<T extends string | number>({
   value,
@@ -56,13 +57,14 @@ export function ToggleSwitch({
   );
 }
 export function FieldError({ id, message }: { id: string; message?: string }) {
+  const { t: tr } = useTranslation();
   return message ? (
     <p
       className="text-[#b1464e] text-[13px] mt-[10px] mb-[10px] ml-0 mr-0"
       id={id}
       role="alert"
     >
-      {message}
+      {tr(message)}
     </p>
   ) : null;
 }

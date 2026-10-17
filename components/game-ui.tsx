@@ -1,4 +1,7 @@
 "use client";
+import { teamName } from "@/i18n/resources";
+import { useTranslation } from "react-i18next";
+
 import { IconButton } from "./ui/button";
 
 import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
@@ -20,6 +23,7 @@ export function Modal({
   onClose: () => void;
   children: ReactNode;
 }) {
+  const { t: tr } = useTranslation();
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const dialog = ref.current;
@@ -38,7 +42,7 @@ export function Modal({
     >
       <div className="flex items-center justify-between gap-4 mb-6">
         <h2 className="text-2xl font-black">{title}</h2>
-        <IconButton label="Zavrieť" onClick={onClose}>
+        <IconButton label={tr("Zavrieť")} onClick={onClose}>
           <X size={22} />
         </IconButton>
       </div>
@@ -47,11 +51,13 @@ export function Modal({
   );
 }
 export function Rules() {
+  const { t: tr } = useTranslation();
   return (
     <div className="text-[14px] leading-[1.65] text-[#8b7c93] [&_h3]:text-[#52465e] [&_strong]:text-[#52465e] space-y-5">
       <p>
-        Rozdeľte sa do 2 až 6 tímov. Predvádzajúci si prevezme mobil a vyberie
-        náročnosť. Ostatní sa na zadanie nepozerajú.
+        {tr(
+          "Rozdeľte sa do 2 až 6 tímov. Predvádzajúci si prevezme mobil a vyberie náročnosť. Ostatní sa na zadanie nepozerajú.",
+        )}
       </p>
       {activities.map((a) => {
         const Icon = activityIcons[a];
@@ -64,32 +70,37 @@ export function Rules() {
               <Icon size={24} />
             </span>
             <div>
-              <h3 className="font-extrabold">{activityInfo[a].name}</h3>
-              <p>{activityInfo[a].instruction}</p>
+              <h3 className="font-extrabold">{tr(activityInfo[a].name)}</h3>
+              <p>{tr(activityInfo[a].instruction)}</p>
             </div>
           </div>
         );
       })}
       <p>
-        <strong>3, 4 alebo 5 bodov.</strong> Čím viac bodov, tým väčšia výzva.
-        Jedno zadanie na ťah. Kreslí sa na papier, ktorý si pripravte spolu s
-        perom.
+        <strong>{tr("3, 4 alebo 5 bodov.")}</strong>{" "}
+        {tr(
+          "Čím viac bodov, tým väčšia výzva. Jedno zadanie na ťah. Kreslí sa na papier, ktorý si pripravte spolu s perom.",
+        )}
       </p>
       <p>
-        <strong>Odpoveď potvrďte pred koncom času.</strong> Zelená fajka znamená
-        uhádnuté, červené X neúspech. Po limite sú body automaticky nulové.
+        <strong>{tr("Odpoveď potvrďte pred koncom času.")}</strong>{" "}
+        {tr(
+          "Zelená fajka znamená uhádnuté, červené X neúspech. Po limite sú body automaticky nulové.",
+        )}
       </p>
       <p>
-        <strong>Hádajú všetci:</strong> úspešný tím získa hodnotu zadania. Ak
-        uhádne súper, predvádzajúci tím dostane 2 body navyše. Otvorené ťahy
-        majú 20 % šancu a nejdú dva za sebou.
+        <strong>{tr("Hádajú všetci:")}</strong>{" "}
+        {tr(
+          "úspešný tím získa hodnotu zadania. Ak uhádne súper, predvádzajúci tím dostane 2 body navyše. Otvorené ťahy majú 20 % šancu a nejdú dva za sebou.",
+        )}
       </p>
       <p>
-        Vyhráva najvyššie skóre po dosiahnutí cieľa. Pri rovnakom najvyššom
-        skóre je víťazstvo spoločné. Pri ďalšom ťahu vymeňte predvádzajúceho.
+        {tr(
+          "Vyhráva najvyššie skóre po dosiahnutí cieľa. Pri rovnakom najvyššom skóre je víťazstvo spoločné. Pri ďalšom ťahu vymeňte predvádzajúceho.",
+        )}
       </p>
       <div className="text-[#8b7c6c] text-[12px] leading-[1.65] bg-[#f0eadd] rounded-[11px] pt-[12px] pb-[12px] pl-[15px] pr-[15px] m-[16px_0_22px]">
-        18+ · Databáza obsahuje aj odvážnejšie témy a dvojzmysly.
+        {tr("18+ · Databáza obsahuje aj odvážnejšie témy a dvojzmysly.")}
       </div>
     </div>
   );
@@ -101,6 +112,7 @@ export function TeamScores({
   game: Game;
   compact?: boolean;
 }) {
+  const { t: tr } = useTranslation();
   return (
     <div
       className={
@@ -108,7 +120,7 @@ export function TeamScores({
           ? "grid gap-[8px]"
           : "flex justify-center flex-wrap gap-[10px] max-[601px]:gap-[7px]"
       }
-      aria-label="Skóre tímov"
+      aria-label={tr("Skóre tímov")}
     >
       {game.teams.map((t, i) => (
         <div
@@ -123,12 +135,11 @@ export function TeamScores({
         >
           <span className="inline-block w-[8px] h-[8px] min-w-[8px] rounded-[50%] bg-[var(--team)]" />
           <span className="font-extrabold [overflow-wrap:anywhere]">
-            {t.name}
+            {teamName(t.name, tr)}
           </span>
           <strong>
             {t.score}
             <span className="text-[#796c81] text-[10px] font-semibold max-[601px]:text-[9px]">
-              {" "}
               / {game.settings.target}
             </span>
           </strong>

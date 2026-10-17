@@ -1,4 +1,7 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
+import { teamName } from "@/i18n/resources";
 import { Eyebrow } from "../ui/eyebrow";
 
 import { useEffect, type RefObject } from "react";
@@ -30,12 +33,14 @@ export function SetupScreen({
 }: {
   headingRef: RefObject<HTMLHeadingElement | null>;
 }) {
+  const { t: tr } = useTranslation();
   const store = useGameStoreApi();
   const game = useGameStore((s) => s.game);
   const setView = useGameStore((s) => s.setView);
   const saveDraft = useGameStore((s) => s.saveDraft);
   const startGame = useGameStore((s) => s.startGame);
   const {
+    getValues,
     register,
     control,
     handleSubmit,
@@ -45,7 +50,13 @@ export function SetupScreen({
     formState: { errors },
   } = useForm<Draft>({
     resolver: zodResolver(setupSchema),
-    defaultValues: store.getState().draft,
+    defaultValues: {
+      ...store.getState().draft,
+      teams: store.getState().draft.teams.map((team) => ({
+        ...team,
+        name: teamName(team.name, tr),
+      })),
+    },
     mode: "onSubmit",
     reValidateMode: "onChange",
   });
@@ -63,9 +74,20 @@ export function SetupScreen({
       }),
     [subscribe, saveDraft],
   );
+  useEffect(() => {
+    getValues("teams").forEach((team, index) => {
+      const name = teamName(team.name, tr);
+      if (name !== team.name) setValue(`teams.${index}.name`, name);
+    });
+  }, [tr, getValues, setValue]);
   const selectPreset = (preset: Draft["preset"]) => {
     setValue("preset", preset);
-    replace(presetTeams(preset));
+    replace(
+      presetTeams(preset).map((team) => ({
+        ...team,
+        name: teamName(team.name, tr),
+      })),
+    );
     clearErrors("teams");
   };
   return (
@@ -75,15 +97,14 @@ export function SetupScreen({
         className="ml-[-10px]"
         onClick={() => setView(game ? "game" : "home")}
       >
-        <ArrowLeft size={18} />
-        Späť
+        <ArrowLeft size={18} /> {tr("Späť")}
       </Button>
       <div className="m-[14px_0_28px] [&_h1]:text-[38px] [&_h1]:font-black [&_h1]:tracking-[-1.6px] [&_h1]:m-[5px_0_6px] [&_p]:text-muted [&_p]:text-[15px] max-[601px]:[&_h1]:text-[34px]">
-        <Eyebrow>NAJPRV SI TO NASTAVME</Eyebrow>
+        <Eyebrow>{tr("NAJPRV SI TO NASTAVME")}</Eyebrow>
         <h1 ref={headingRef} tabIndex={-1}>
-          Kto je v hre?
+          {tr("Kto je v hre?")}
         </h1>
-        <p>Zavolaj partiu. O zvyšok sa postaráme.</p>
+        <p>{tr("Zavolaj partiu. O zvyšok sa postaráme.")}</p>
       </div>
       <form
         onSubmit={handleSubmit((draft) => {
@@ -92,7 +113,7 @@ export function SetupScreen({
         noValidate
       >
         <SegmentedControl
-          label="Zostavenie tímov"
+          label={tr("Zostavenie tímov")}
           className="mb-[28px] max-[601px]:[&_button]:text-[12px]"
           value={values.preset ?? defaults.preset}
           onChange={selectPreset}
@@ -101,17 +122,16 @@ export function SetupScreen({
               value: "custom",
               label: (
                 <>
-                  <Users size={18} />
-                  Vlastné tímy
+                  <Users size={18} /> {tr("Vlastné tímy")}
                 </>
               ),
             },
-            { value: "versus", label: "Muži proti ženám" },
+            { value: "versus", label: tr("Muži proti ženám") },
           ]}
         />
         <section className="m-[0_0_25px] [&_h2]:text-[15px] [&_h2]:font-black [&_h2]:flex [&_h2]:items-center [&_h2]:gap-[9px]">
           <div className="flex justify-between items-center mb-3">
-            <h2>Vaše tímy</h2>
+            <h2>{tr("Vaše tímy")}</h2>
             <span className="text-muted text-sm">{fields.length} / 6</span>
           </div>
           <div className="space-y-3">
@@ -131,13 +151,13 @@ export function SetupScreen({
                       {index + 1}
                     </span>
                     <label className="sr-only" htmlFor={`team-${index}`}>
-                      Názov tímu {index + 1}
+                      {tr("setup.name", { number: index + 1 })}
                     </label>
                     <input
                       id={`team-${index}`}
                       {...register(`teams.${index}.name`)}
                       maxLength={24}
-                      placeholder={`Tím ${index + 1}`}
+                      placeholder={tr("teams.number", { number: index + 1 })}
                       autoComplete="off"
                       aria-invalid={!!error}
                       aria-describedby={
@@ -146,7 +166,7 @@ export function SetupScreen({
                     />
                     {fields.length > 2 && (
                       <IconButton
-                        label={`Odstrániť tím ${index + 1}`}
+                        label={tr("setup.remove", { number: index + 1 })}
                         onClick={() => remove(index)}
                       >
                         <X size={18} />
@@ -156,13 +176,22 @@ export function SetupScreen({
                   <FieldError id={`team-error-${index}`} message={error} />
                   <div
                     className="flex flex-wrap ml-[39px] [&_button]:min-w-[48px] [&_button]:min-h-[48px] [&_button]:flex [&_button]:items-center [&_button]:justify-center [&_button_>_span]:w-[19px] [&_button_>_span]:h-[19px] [&_button_>_span]:rounded-[50%] [&_button_>_span]:text-white [&_button_>_span]:grid [&_button_>_span]:place-items-center [&_button[aria-pressed=true]_>_span]:[outline:2px_solid_#c9bece] [&_button[aria-pressed=true]_>_span]:[outline-offset:3px] max-[601px]:[&_button]:min-w-[48px] max-[601px]:[&_button]:min-h-[48px] max-[601px]:ml-0 max-[361px]:ml-0 max-[361px]:[&_button]:flex-1"
-                    aria-label={`Farba tímu ${index + 1}`}
+                    aria-label={tr("setup.teamColor", { number: index + 1 })}
                   >
                     {COLORS.map((color, ci) => (
                       <button
                         type="button"
                         key={color}
-                        aria-label={`Farba ${["fialová", "oranžová", "zelená", "ružová", "modrá", "žltá"][ci]}`}
+                        aria-label={tr("setup.color", {
+                          color: [
+                            tr("fialová"),
+                            tr("oranžová"),
+                            tr("zelená"),
+                            tr("ružová"),
+                            tr("modrá"),
+                            tr("žltá"),
+                          ][ci],
+                        })}
                         aria-pressed={color === team.color}
                         onClick={() =>
                           setValue(`teams.${index}.color`, color, {
@@ -189,27 +218,25 @@ export function SetupScreen({
               onClick={() => {
                 setValue("preset", "custom");
                 append({
-                  name: `Tím ${fields.length + 1}`,
+                  name: tr("teams.number", { number: fields.length + 1 }),
                   color: COLORS[fields.length],
                 });
               }}
             >
-              <Plus size={18} />
-              Pridať tím
+              <Plus size={18} /> {tr("Pridať tím")}
             </button>
           )}
         </section>
         <section className="m-[0_0_25px] [&_h2]:text-[15px] [&_h2]:font-black [&_h2]:flex [&_h2]:items-center [&_h2]:gap-[9px]">
           <h2>
-            <Clock3 size={19} />
-            Čas na zadanie
+            <Clock3 size={19} /> {tr("Čas na zadanie")}
           </h2>
           <Controller
             control={control}
             name="settings.seconds"
             render={({ field }) => (
               <SegmentedControl
-                label="Čas na zadanie"
+                label={tr("Čas na zadanie")}
                 className="mt-[11px] [&_button]:block [&_span]:text-[11px] [&_span]:font-semibold max-[601px]:[&_span]:block max-[601px]:[&_span]:text-[10px]"
                 value={field.value}
                 onChange={field.onChange}
@@ -218,7 +245,7 @@ export function SetupScreen({
                   label: (
                     <>
                       {value}
-                      <span> sek.</span>
+                      <span> {tr("sek.")}</span>
                     </>
                   ),
                 }))}
@@ -228,15 +255,14 @@ export function SetupScreen({
         </section>
         <section className="m-[0_0_25px] [&_h2]:text-[15px] [&_h2]:font-black [&_h2]:flex [&_h2]:items-center [&_h2]:gap-[9px]">
           <h2>
-            <Trophy size={19} />
-            Hráme do
+            <Trophy size={19} /> {tr("Hráme do")}
           </h2>
           <Controller
             control={control}
             name="settings.target"
             render={({ field }) => (
               <SegmentedControl
-                label="Cieľové skóre"
+                label={tr("Cieľové skóre")}
                 className="mt-[11px] [&_button]:block [&_span]:text-[11px] [&_span]:font-semibold max-[601px]:[&_span]:block max-[601px]:[&_span]:text-[10px]"
                 value={field.value}
                 onChange={field.onChange}
@@ -245,7 +271,7 @@ export function SetupScreen({
                   label: (
                     <>
                       {value}
-                      <span> bodov</span>
+                      <span> {tr("pointsUnit", { count: value })}</span>
                     </>
                   ),
                 }))}
@@ -255,15 +281,15 @@ export function SetupScreen({
         </section>
         <section className="m-[0_0_25px] [&_h2]:text-[15px] [&_h2]:font-black [&_h2]:flex [&_h2]:items-center [&_h2]:gap-[9px] flex items-center justify-between gap-[15px] [&_p]:text-[12px] [&_p]:text-muted [&_p]:mt-[4px]">
           <div>
-            <h2>Občas hádajú všetci</h2>
-            <p>Otvorené ťahy prinesú trochu vzrušenia.</p>
+            <h2>{tr("Občas hádajú všetci")}</h2>
+            <p>{tr("Otvorené ťahy prinesú trochu vzrušenia.")}</p>
           </div>
           <Controller
             control={control}
             name="settings.openRounds"
             render={({ field }) => (
               <ToggleSwitch
-                label="Hádajú všetci"
+                label={tr("Hádajú všetci")}
                 checked={field.value}
                 onChange={field.onChange}
               />
@@ -273,14 +299,14 @@ export function SetupScreen({
         <section className="flex items-center justify-between gap-[15px] [&_p]:text-[12px] [&_p]:text-muted [&_p]:mt-[4px] mt-[-10px] text-[13px] text-[#7c7285]">
           <div className="flex items-center gap-3">
             <Volume2 size={18} />
-            <span>Zvuky hry</span>
+            <span>{tr("Zvuky hry")}</span>
           </div>
           <Controller
             control={control}
             name="settings.sound"
             render={({ field }) => (
               <ToggleSwitch
-                label="Zvuky hry"
+                label={tr("Zvuky hry")}
                 checked={field.value}
                 onChange={field.onChange}
               />
@@ -288,19 +314,18 @@ export function SetupScreen({
           />
         </section>
         <p className="text-[#8b7c6c] text-[12px] leading-[1.65] bg-[#f0eadd] rounded-[11px] pt-[12px] pb-[12px] pl-[15px] pr-[15px] m-[16px_0_22px]">
-          18+ · Aj odvážnejšie zadania. Priprav si papier a pero.
+          {tr("18+ · Aj odvážnejšie zadania. Priprav si papier a pero.")}
         </p>
         <FieldError
           id="teams-error"
           message={errors.teams?.root?.message ?? errors.teams?.message}
         />
         <Button type="submit" className="w-full">
-          Všetci pripravení? Hráme!
-          <ArrowRight size={20} />
+          {tr("Všetci pripravení? Hráme!")} <ArrowRight size={20} />
         </Button>
         {game && game.phase !== "finished" && (
           <p className="text-muted text-sm text-center mt-3">
-            Spustením novej hry nahradíš rozohranú partiu.
+            {tr("Spustením novej hry nahradíš rozohranú partiu.")}
           </p>
         )}
       </form>

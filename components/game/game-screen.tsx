@@ -1,9 +1,11 @@
 "use client";
+import { useTranslation } from "react-i18next";
+
 import { Clock3, Trophy } from "lucide-react";
 import { TeamScores } from "../game-ui";
 import { useGameStore } from "@/stores/game-provider";
 import { winners, type Game } from "@/lib/game";
-import { activityInfo } from "@/lib/words";
+import { localizedActivity } from "@/i18n/resources";
 import type { RefObject } from "react";
 import type { TurnScreenProps } from "./turn-types";
 import { ChooseScreen } from "./choose-screen";
@@ -33,6 +35,7 @@ export function GameScreen({
   turnLabel: string;
   setModal: (modal: "rules") => void;
 }) {
+  const { t: tr } = useTranslation();
   const dispatch = useGameStore((s) => s.dispatch);
   const startNew = useGameStore((s) => s.openSetup);
   const replay = useGameStore((s) => s.replay);
@@ -45,7 +48,7 @@ export function GameScreen({
     replay,
     startTimer: (now) => dispatch({ type: "start", now }),
     team: game.teams[game.teamIndex],
-    info: activityInfo[game.turn.activity],
+    info: localizedActivity(game.turn.activity, tr),
     last: game.history.at(-1),
     allWinners: winners(game),
   };
@@ -56,8 +59,8 @@ export function GameScreen({
       <div className="flex items-center justify-between text-[#796c81] text-[14px] m-[19px_0_0] flex-wrap gap-[8px] leading-[1.5] [&_>_span:last-child]:flex [&_>_span:last-child]:items-center [&_>_span:last-child]:gap-[5px] max-[601px]:mt-[15px] max-[601px]:text-[14px] max-[601px]:flex-wrap max-[601px]:gap-[8px] max-[601px]:leading-[1.5]">
         <span>{turnLabel}</span>
         <span>
-          <Trophy size={14} />
-          Cieľ {game.settings.target} bodov
+          <Trophy size={14} />{" "}
+          {tr("game.target", { count: game.settings.target })}
         </span>
       </div>
       <div
@@ -69,8 +72,11 @@ export function GameScreen({
       {phase === "choose" && (
         <div className="flex items-center justify-center gap-[7px] text-[14px] text-[#796c81] m-[10px_auto_10px] flex-wrap leading-[1.5] [&_>_span]:mt-0 [&_>_span]:mb-0 [&_>_span]:ml-[6px] [&_>_span]:mr-[6px] [&_button]:min-h-[48px] [&_button]:pt-[8px] [&_button]:pb-[8px] [&_button]:pl-[2px] [&_button]:pr-[2px] [&_button]:text-[#8e7a9e] [&_button]:[text-decoration:underline] [&_button]:[text-underline-offset:3px] max-[601px]:mt-0 max-[601px]:text-[14px] max-[601px]:flex-wrap max-[601px]:leading-[1.5]">
           <Clock3 size={15} />
-          {game.settings.seconds} sekúnd na zadanie<span>·</span>
-          <button onClick={() => setModal("rules")}>Pravidlá hry</button>
+          {tr("game.duration", { count: game.settings.seconds })}
+          <span>·</span>
+          <button onClick={() => setModal("rules")}>
+            {tr("Pravidlá hry")}
+          </button>
         </div>
       )}
     </main>
