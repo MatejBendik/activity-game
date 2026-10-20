@@ -73,6 +73,17 @@ function GameApp() {
           )}
         </>
       )}
+      <footer className="mt-auto py-5 text-center text-sm text-muted">
+        {tr("footer.madeBy")}{" "}
+        <a
+          href="https://matejbendik.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-12 items-center font-extrabold text-purple underline decoration-purple/40 underline-offset-4 hover:decoration-purple"
+        >
+          Matej Bendík
+        </a>
+      </footer>
       <AppDialogs
         game={game}
         modal={modal}

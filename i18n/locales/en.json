@@ -165,5 +165,6 @@
   "meta.description": "Describe, draw, act it out. A party game for 2–6 teams on one phone.",
   "Prehliadač nedovolil uložiť hru. Pred obnovením stránky povoľ lokálne úložisko.": "Your browser could not save the game. Enable local storage before refreshing.",
   "Uloženú partiu sa nepodarilo načítať. Môžeš začať novú hru.": "Your saved game could not be loaded. You can start a new game.",
-  "Lokálne úložisko je nedostupné. Ukladanie hry môže byť obmedzené.": "Local storage is unavailable. Saving the game may be limited."
+  "Lokálne úložisko je nedostupné. Ukladanie hry môže byť obmedzené.": "Local storage is unavailable. Saving the game may be limited.",
+  "footer.madeBy": "Made by"
 }

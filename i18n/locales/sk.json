@@ -165,5 +165,6 @@
   "meta.description": "Opisuj, kresli, predvádzaj. Párty hra pre 2 až 6 tímov na jednom mobile.",
   "Prehliadač nedovolil uložiť hru. Pred obnovením stránky povoľ lokálne úložisko.": "Prehliadač nedovolil uložiť hru. Pred obnovením stránky povoľ lokálne úložisko.",
   "Uloženú partiu sa nepodarilo načítať. Môžeš začať novú hru.": "Uloženú partiu sa nepodarilo načítať. Môžeš začať novú hru.",
-  "Lokálne úložisko je nedostupné. Ukladanie hry môže byť obmedzené.": "Lokálne úložisko je nedostupné. Ukladanie hry môže byť obmedzené."
+  "Lokálne úložisko je nedostupné. Ukladanie hry môže byť obmedzené.": "Lokálne úložisko je nedostupné. Ukladanie hry môže byť obmedzené.",
+  "footer.madeBy": "Vytvoril"
 }
