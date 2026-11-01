@@ -204,6 +204,74 @@ describe("per-team activity planning", () => {
         }
       }
   });
+  test("open-round history belongs to the performing team when refilling a block", () => {
+    let game = newGame(5);
+    const assigned: Activity[] = [];
+    const previous: (Activity | undefined)[] = Array(5).fill(undefined);
+    for (let turn = 0; turn < 30; turn++) {
+      const activity = game.turn.activity;
+      expect(activity).not.toBe(assigned.at(-1));
+      expect(activity).not.toBe(previous[game.teamIndex]);
+      assigned.push(activity);
+      previous[game.teamIndex] = activity;
+      const performer = game.teams[game.teamIndex].id;
+      game = finish(
+        { ...game, turn: { ...game.turn, open: true } },
+        3,
+        "opponent",
+      );
+      expect(game.history.at(-1)!.teamId).toBe(performer);
+      expect(game.history.at(-1)!.winnerId).not.toBe(performer);
+      game = transition(game, { type: "next" }, seeded(turn));
+    }
+    assertBlock(assigned.slice(0, 15), 5, 0, Array(5).fill(undefined));
+    assertBlock(assigned.slice(15), 5, 0, Array(5).fill(undefined));
+  });
+  test("version 1 snapshots preserve every phase and schedule the next block from the next team", () => {
+    let game = newGame(5);
+    for (let i = 0; i < 7; i++)
+      game = transition(finish(game), { type: "next" }, seeded(i));
+    const snapshots: Game[] = [game];
+    game = transition(game, { type: "choose", points: 4 }, () => 0);
+    snapshots.push(game);
+    game = transition(game, { type: "reveal" });
+    snapshots.push(game);
+    game = transition(game, { type: "start", now: 1000 });
+    snapshots.push(game);
+    game = transition(game, { type: "hide" });
+    snapshots.push(game);
+    game = { ...game, turn: { ...game.turn, open: true } };
+    game = transition(game, { type: "answer", correct: true, now: 2000 });
+    snapshots.push(game);
+    game = transition(game, { type: "winner", teamId: game.teams[0].id });
+    snapshots.push(game);
+    snapshots.push({ ...game, phase: "finished" });
+    for (const snapshot of snapshots) {
+      const legacy = { ...snapshot, version: 1, bag: ["kreslenie"] };
+      Reflect.deleteProperty(legacy, "activityQueue");
+      const restored = deserialize(JSON.stringify(legacy))!;
+      expect(restored).toEqual({ ...snapshot, version: 2, activityQueue: [] });
+      expect(deserialize(serialize(restored))).toEqual(restored);
+    }
+    const legacy = { ...game, version: 1, bag: ["kreslenie"] };
+    const restored = deserialize(JSON.stringify(legacy))!;
+    const next = transition(restored, { type: "next" }, seeded(77));
+    const previous: (Activity | undefined)[] = game.teams.map(
+      (team) =>
+        game.history.findLast((result) => result.teamId === team.id)?.word
+          .activity,
+    );
+    previous[game.teamIndex] = game.turn.activity;
+    const first = (game.teamIndex + 1) % game.teams.length;
+    expect(next.teamIndex).toBe(first);
+    assertBlock(
+      [next.turn.activity, ...next.activityQueue],
+      5,
+      first,
+      previous,
+      game.turn.activity,
+    );
+  });
   test("invalid saved queues are rejected instead of breaking the rules after reload", () => {
     const game = newGame(5);
     for (const activityQueue of [

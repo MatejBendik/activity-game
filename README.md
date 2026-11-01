@@ -36,7 +36,7 @@ Oficiálne podklady: [Next.js setup](https://nextjs.org/docs/app/getting-started
 ## Hra
 
 - Predvolené nastavenie: 60 sekúnd, cieľ 40 bodov, otvorené ťahy zapnuté.
-- Aktivity sa miešajú v trojiciach bez rovnakých susedných aktivít na hranici trojíc.
+- Aktivity sa plánujú dopredu na tri kolá pre všetky tímy. Každý tím v jednom plánovanom bloku dostane raz opis, raz kreslenie a raz pantomímu. Aktivita sa neopakuje ani oproti predchádzajúcemu vlastnému ťahu, ani oproti bezprostredne predchádzajúcemu tímu; pravidlá platia aj na hraniciach kôl a blokov. Úspech, neúspech a počet bodov nerozhodujú o ďalšej aktivite. Pri dvoch tímoch tieto podmienky po úvodných aktivitách vynútia pravidelné poradie.
 - Bodová hodnota sa vyberá pred súkromným odhalením. Náročnosť sa potom nemení.
 - Čas sa spúšťa výslovne a zadanie sa pri spustení automaticky skryje. Tlačidlom „Zobraziť zadanie“ sa dá pripomenúť. Zelená fajka vpravo je úspech, červené X vľavo neúspech.
 - Úspech musí byť potvrdený **pred** absolútnym časom konca; klik presne na hranici je už neskoro. Po uplynutí času je výsledok automaticky nula, bez možnosti dodatočného pripísania bodov.
@@ -48,12 +48,15 @@ Oficiálne podklady: [Next.js setup](https://nextjs.org/docs/app/getting-started
 
 Stav spravuje provider-local Zustand store s middleware `persist`, explicitnou hydratáciou po mountnutí a selektormi. Každá herná zmena sa synchronizovane zapisuje do `localStorage` pred vykreslením nového stavu. Ukladá sa celý stav: tímy, poradie, skóre, aktivita, zadanie, použité slová, výsledky, fáza, skrytie aj absolútny čas konca. Záložná kópia pomáha pri poškodení hlavného záznamu. Nový záznam `aktivity.store.v1` obsahuje partiu aj rozpracované nastavenia; `.backup` je jeho synchronizovaná záloha. Pri prvom načítaní sa automaticky importujú pôvodné záznamy `aktivity.game.v1`, jeho záloha a `aktivity.setup.v1`. Pôvodné záznamy zostávajú nedotknuté. Poškodený nový záznam sa obnovuje zo svojej novej zálohy; nikdy sa potichu nevracia na staré skóre z legacy dát.
 
+Herný stav má verziu 2 a uchováva `activityQueue`: zostávajúce aktivity pripraveného bloku. Prvá aktivita sa pridelí pri založení partie a ďalšia až po stlačení „Ďalší tím“. Posledné aktivity jednotlivých tímov sa odvodzujú z histórie podľa predvádzajúceho tímu, nie víťaza otvoreného ťahu. Nový blok vždy nadväzuje na tieto aktivity aj aktuálny ťah. Odveta vytvorí nový úplný rozpis. Verzia obalu Zustand a kľúče úložiska zostávajú nezmenené. Existujúca verzia 1 sa načíta bez zmeny aktuálneho zadania a časovača; starý `bag` sa zahodí a prvý nový blok sa pripraví až pre nasledujúci tím. Tento prvý blok preto nemusí začínať prvým tímom kola.
+
 Obnovenie aj návrat na adresu hry automaticky otvoria poslednú partiu. Žiadne interné prechody nevytvárajú nové URL ani históriu navigácie. Zatvorenie stránky alebo odchod späť z prehliadača stav nemaže. Pri návrate po uplynutí limitu sa ťah vyhodnotí ako neúspešný. Menu ani prepnutie aplikácie čas nepozastavujú.
 
 Úložisko patrí konkrétnemu prehliadaču a webovej adrese. Vymazanie údajov stránky či anonymného profilu môže hru odstrániť. Pri nedostupnom úložisku sa zobrazí upozornenie. Aktívna partia sa nahradí až pri spustení novej hry, nie otvorením nastavení.
 
 ## Štruktúra
 
+- `lib/activity-schedule.ts`: plánovač troch celých kôl s náhodným poradím kandidátov a návratom zo slepých uličiek; nikdy neuvoľňuje podmienky striedania.
 - `lib/game.ts`: samostatné typy a prechody herného stavu, validácia uloženia, bodovanie.
 - `lib/words.ts`: 450 vlastných slovenských zadaní; presne 50 pre každú aktivitu a bodovú hodnotu.
 - `stores/`: Zustand store, SSR-safe provider, validované ukladanie a migrácia starých dát.

@@ -178,6 +178,88 @@ describe("Zustand persistence", () => {
     await Promise.resolve();
     expect(store.getState().game?.phase).toBe("choose");
   });
+  test("saved queue survives hydration, backup recovery and advances exactly once", async () => {
+    const storage = memoryStorage();
+    const store = createGameStore({
+      storage,
+      now: () => 2000,
+      random: () => 0.5,
+    });
+    await hydrate(store);
+    store.getState().startGame(defaults);
+    const queue = [...store.getState().game!.activityQueue];
+    store.getState().dispatch({ type: "choose", points: 3 });
+    store.getState().dispatch({ type: "reveal" });
+    store.getState().dispatch({ type: "start", now: 1000 });
+    const corrupted = JSON.parse(storage.getItem(STORE_KEY)!);
+    corrupted.state.game.activityQueue[0] = corrupted.state.game.turn.activity;
+    storage.setItem(STORE_KEY, JSON.stringify(corrupted));
+    const restored = createGameStore({
+      storage,
+      now: () => 2000,
+      random: () => 0.99,
+    });
+    await hydrate(restored);
+    expect(restored.getState().game!.activityQueue).toEqual(queue);
+    expect(restored.getState().game!.turn.deadline).toBe(61000);
+    restored.getState().dispatch({ type: "answer", correct: false, now: 2000 });
+    restored.getState().dispatch({ type: "next" });
+    restored.getState().dispatch({ type: "next" });
+    const saved = parsePersisted(storage.getItem(STORE_KEY))!.state.game!;
+    expect(saved.version).toBe(2);
+    expect(saved.turn.activity).toBe(queue[0]);
+    expect(saved.activityQueue).toEqual(queue.slice(1));
+    expect(storage.getItem(`${STORE_KEY}.backup`)).toBe(
+      storage.getItem(STORE_KEY),
+    );
+  });
+  test("replay starts a fresh complete schedule with cleared scores and history", async () => {
+    const store = createGameStore({
+      storage: memoryStorage(),
+      random: () => 0.5,
+    });
+    await hydrate(store);
+    store.getState().startGame(defaults);
+    store.getState().dispatch({ type: "choose", points: 3 });
+    store.getState().dispatch({ type: "reveal" });
+    store.getState().dispatch({ type: "start", now: 1000 });
+    store.getState().dispatch({ type: "answer", correct: true, now: 2000 });
+    store.getState().dispatch({ type: "next" });
+    const previous = store.getState().game!;
+    store.getState().replay();
+    const game = store.getState().game!;
+    expect(game.version).toBe(2);
+    expect(game.activityQueue).not.toBe(previous.activityQueue);
+    expect(game.activityQueue).toHaveLength(3 * game.teams.length - 1);
+    expect(game.history).toEqual([]);
+    expect(game.teams.every((team) => team.score === 0)).toBe(true);
+    expect(game.teamIndex).toBe(0);
+    expect(game.turnNumber).toBe(1);
+  });
+  test("version 1 data upgrades inside the existing Zustand envelope without rerolling the active turn", async () => {
+    const storage = memoryStorage();
+    const game = activeGame();
+    const legacy = { ...game, version: 1, bag: ["opis", "kreslenie"] };
+    Reflect.deleteProperty(legacy, "activityQueue");
+    storage.setItem(
+      STORE_KEY,
+      JSON.stringify({ version: 1, state: { game: legacy, draft: defaults } }),
+    );
+    const store = createGameStore({
+      storage,
+      now: () => 2000,
+      random: () => {
+        throw new Error("Hydration must not draw activities");
+      },
+    });
+    await hydrate(store);
+    const saved = store.getState().game!;
+    expect(saved).toEqual({ ...game, version: 2, activityQueue: [] });
+    expect(saved.turn.deadline).toBe(61000);
+    expect(parsePersisted(storage.getItem(STORE_KEY))!.state.game).toEqual(
+      saved,
+    );
+  });
   test("cross-tab game updates preserve deadline and expire overdue turns", async () => {
     const store = createGameStore({
       storage: memoryStorage(),
