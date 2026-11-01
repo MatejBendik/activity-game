@@ -54,6 +54,7 @@ describe("Zustand persistence", () => {
     const storage = memoryStorage();
     const game = activeGame();
     game.teamIndex = 1;
+    game.activityQueue = [];
     game.teams[0].score = 12;
     game.used.push("legacy");
     storage.setItem(STORAGE_KEY, serialize(game));

@@ -1,3 +1,4 @@
+import { planActivities } from "./activity-schedule";
 import {
   activities,
   normalize,
@@ -48,14 +49,14 @@ export type Result = {
   expired: boolean;
 };
 export type Game = {
-  version: 1;
+  version: 2;
   teams: Team[];
   settings: Settings;
   teamIndex: number;
   turnNumber: number;
   phase: Phase;
   turn: Turn;
-  bag: Activity[];
+  activityQueue: Activity[];
   used: string[];
   history: Result[];
 };
@@ -70,45 +71,64 @@ export type Action =
   | { type: "next" }
   | { type: "undo" }
   | { type: "sound"; value: boolean };
-export function shuffle<T>(items: T[], random = Math.random): T[] {
-  const a = [...items];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
+function previousActivities(game: Game): (Activity | undefined)[] {
+  const last = new Map<string, Activity>();
+  for (const result of game.history)
+    last.set(result.teamId, result.word.activity);
+  // The current turn is already assigned, even before it has a result.
+  last.set(game.teams[game.teamIndex].id, game.turn.activity);
+  return game.teams.map((team) => last.get(team.id));
 }
-export function drawActivity(
-  bag: Activity[],
-  previous?: Activity,
-  random = Math.random,
-) {
-  let next = [...bag];
-  if (!next.length) {
-    next = shuffle([...activities], random);
-    if (next[0] === previous) [next[0], next[1]] = [next[1], next[0]];
+
+function validActivityQueue(game: Game): boolean {
+  if (
+    !Array.isArray(game.activityQueue) ||
+    game.activityQueue.length >= game.teams.length * 3
+  )
+    return false;
+  const last = previousActivities(game);
+  const used = game.teams.map(() => new Set<Activity>());
+  let previous = game.turn.activity;
+  for (let i = 0; i < game.activityQueue.length; i++) {
+    const activity = game.activityQueue[i];
+    const team = (game.teamIndex + i + 1) % game.teams.length;
+    if (
+      !activities.includes(activity) ||
+      activity === previous ||
+      activity === last[team] ||
+      used[team].has(activity)
+    )
+      return false;
+    previous = last[team] = activity;
+    used[team].add(activity);
   }
-  return { activity: next[0], bag: next.slice(1) };
+  return true;
 }
+
 export function createGame(
   teams: Pick<Team, "name" | "color">[],
   settings: Settings,
   random = Math.random,
 ): Game {
-  const draw = drawActivity([], undefined, random);
+  const schedule = planActivities(
+    teams.map(() => undefined),
+    0,
+    undefined,
+    random,
+  );
   return {
-    version: 1,
+    version: 2,
     teams: teams.map((t, i) => ({ ...t, id: `team-${i}`, score: 0 })),
     settings,
     teamIndex: 0,
     turnNumber: 1,
     phase: "choose",
     turn: {
-      activity: draw.activity,
+      activity: schedule[0],
       open: settings.openRounds && random() < 0.2,
       hidden: false,
     },
-    bag: draw.bag,
+    activityQueue: schedule.slice(1),
     used: [],
     history: [],
   };
@@ -215,15 +235,23 @@ export function transition(
     case "next": {
       if (game.phase !== "result") return game;
       if (winners(game).length) return { ...game, phase: "finished" };
-      const draw = drawActivity(game.bag, game.turn.activity, random);
+      const nextTeam = (game.teamIndex + 1) % game.teams.length;
+      const schedule = game.activityQueue.length
+        ? game.activityQueue
+        : planActivities(
+            previousActivities(game),
+            nextTeam,
+            game.turn.activity,
+            random,
+          );
       return {
         ...game,
         phase: "choose",
-        teamIndex: (game.teamIndex + 1) % game.teams.length,
+        teamIndex: nextTeam,
         turnNumber: game.turnNumber + 1,
-        bag: draw.bag,
+        activityQueue: schedule.slice(1),
         turn: {
-          activity: draw.activity,
+          activity: schedule[0],
           open: game.settings.openRounds && !game.turn.open && random() < 0.2,
           hidden: false,
         },
@@ -279,9 +307,13 @@ function isWordSnapshot(value: unknown): value is Word {
 export function deserialize(raw: string | null): Game | null {
   if (!raw) return null;
   try {
-    const g = JSON.parse(raw) as Game;
+    const g = JSON.parse(raw) as Omit<Game, "version" | "activityQueue"> &
+      (
+        | { version: 1; bag: Activity[] }
+        | { version: 2; activityQueue: Activity[] }
+      );
     if (
-      g.version !== 1 ||
+      (g.version !== 1 && g.version !== 2) ||
       !Array.isArray(g.teams) ||
       g.teams.length < 2 ||
       g.teams.length > 6 ||
@@ -325,8 +357,6 @@ export function deserialize(raw: string | null): Game | null {
       !activities.includes(g.turn.activity) ||
       typeof g.turn.hidden !== "boolean" ||
       typeof g.turn.open !== "boolean" ||
-      !Array.isArray(g.bag) ||
-      !g.bag.every((a) => activities.includes(a)) ||
       !Array.isArray(g.used) ||
       !g.used.every((w) => typeof w === "string") ||
       !Array.isArray(g.history)
@@ -370,7 +400,33 @@ export function deserialize(raw: string | null): Game | null {
       )
     )
       return null;
-    return g;
+    if (g.version === 1) {
+      if (!Array.isArray(g.bag) || !g.bag.every((a) => activities.includes(a)))
+        return null;
+      const {
+        teams,
+        settings,
+        teamIndex,
+        turnNumber,
+        phase,
+        turn,
+        used,
+        history,
+      } = g;
+      const preserved = {
+        teams,
+        settings,
+        teamIndex,
+        turnNumber,
+        phase,
+        turn,
+        used,
+        history,
+      };
+      // Start a fresh block on the NEXT turn; never reroll an active saved task.
+      return { ...preserved, version: 2, activityQueue: [] };
+    }
+    return validActivityQueue(g) ? g : null;
   } catch {
     return null;
   }

@@ -4,7 +4,6 @@ import {
   COLORS,
   createGame,
   deserialize,
-  drawActivity,
   serialize,
   transition,
   winners,
@@ -73,20 +72,6 @@ describe("simpler drawing and mime prompts", () => {
   }
 });
 describe("turn state and fairness", () => {
-  test("balanced triplets and no consecutive activity at boundaries", () => {
-    let bag: Game["bag"] = [];
-    let previous;
-    const draws = [];
-    for (let i = 0; i < 300; i++) {
-      const d = drawActivity(bag, previous);
-      if (previous) expect(d.activity).not.toBe(previous);
-      draws.push(d.activity);
-      previous = d.activity;
-      bag = d.bag;
-    }
-    for (let i = 0; i < 300; i += 3)
-      expect(new Set(draws.slice(i, i + 3)).size).toBe(3);
-  });
   test("secret handoff, reveal, immutable difficulty, explicit timer start", () => {
     let g = newGame();
     expect(g.turn.word).toBeUndefined();
@@ -267,6 +252,7 @@ describe("saved prompt compatibility", () => {
       text: "niesť obrovskú neviditeľnú skriňu",
     };
     g.turn.activity = "pantomima";
+    g.activityQueue = [];
     expect(deserialize(serialize(g))).toEqual(g);
     expect(deserialize(serialize(g))?.turn.deadline).toBe(61000);
   });
@@ -278,6 +264,8 @@ describe("saved prompt compatibility", () => {
       points: 4,
       text: "trezor v banke",
     };
+    g.turn = { ...g.turn, activity: "kreslenie", word: g.history[0].word };
+    g.activityQueue = [];
     expect(deserialize(serialize(g))).toEqual(g);
     const next = transition(g, { type: "next" });
     expect(deserialize(serialize(next))).toEqual(next);
