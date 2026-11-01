@@ -61,6 +61,15 @@ describe("game sound cues", () => {
     await playCue(context, true, "everyone");
     expect(ctx.resume).toHaveBeenCalledTimes(1);
     expect(oscillators).toHaveLength(6);
+    const peaks = gains.map(
+      (node) => node.gain.linearRampToValueAtTime.mock.calls[0][0],
+    );
+    expect(peaks).toEqual([0.2, 0.05, 0.2, 0.05, 0.2, 0.05]);
+    // Conservative overlap bound: no clipping even if every note reached peak together.
+    expect(peaks.reduce((sum, peak) => sum + peak, 0)).toBeLessThan(1);
+    const decay = gains[0].gain.exponentialRampToValueAtTime.mock.calls[0];
+    expect(decay[0]).toBe(0.002);
+    expect(decay[1]).toBeCloseTo(10.54, 8);
     expect(
       oscillators.filter((_, i) => i % 2 === 0).map((n) => n.frequency.value),
     ).toEqual([880, 1108.73, 1318.51]);
@@ -72,8 +81,12 @@ describe("game sound cues", () => {
     expect(gains[0].disconnect).toHaveBeenCalledTimes(1);
   });
   test("time-up cue stays distinct from the everyone cue", async () => {
-    const { context, oscillators } = audioContext();
+    const { context, oscillators, gains } = audioContext();
     await playCue(context, true, "timeUp");
+    expect(gains[0].gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+      0.2,
+      10.01,
+    );
     expect(oscillators.map((n) => n.frequency.value)).toEqual([740, 740, 520]);
   });
   test("muted, absent and closed audio play nothing", async () => {
@@ -117,10 +130,15 @@ describe("final five seconds", () => {
     expect(countdownSecond(10000, 6000, 2)).toBeNull();
   });
   test("countdown is a short rising tick, distinct from time-up", async () => {
-    const { context, oscillators } = audioContext();
+    const { context, oscillators, gains } = audioContext();
     await playCue(context, true, "countdown", 5);
     await playCue(context, true, "countdown", 1);
     expect(oscillators.map((n) => n.frequency.value)).toEqual([880, 1320]);
+    for (const node of gains)
+      expect(node.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
+        0.2,
+        10.01,
+      );
     expect(oscillators[0].stop).toHaveBeenCalledWith(10.1);
   });
   test("muting also suppresses countdown ticks", async () => {

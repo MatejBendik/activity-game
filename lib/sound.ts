@@ -1,5 +1,9 @@
 export type SoundCue = "timeUp" | "everyone" | "countdown";
 
+// Double the signal level (+6 dB); phone media volume remains the volume control.
+// Even all six bell oscillators at peak sum to 0.75, below full scale.
+const CUE_VOLUME = 2;
+
 // Small synthesized cues: no downloads, permissions or third-party audio assets.
 export function playCue(
   context: AudioContext | null,
@@ -34,11 +38,11 @@ export function playCue(
             oscillator.frequency.value = frequency * harmonic;
             gain.gain.setValueAtTime(0, start);
             gain.gain.linearRampToValueAtTime(
-              harmonic === 1 ? 0.1 : 0.025,
+              (harmonic === 1 ? 0.1 : 0.025) * CUE_VOLUME,
               start + 0.01,
             );
             gain.gain.exponentialRampToValueAtTime(
-              0.001,
+              0.001 * CUE_VOLUME,
               start + length - 0.01,
             );
             oscillator.connect(gain);
